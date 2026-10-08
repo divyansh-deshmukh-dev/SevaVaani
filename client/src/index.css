@@ -1,26 +1,69 @@
 :root {
-  --primary: #1e3a8a; /* Deep navy blue */
-  --primary-hover: #1e40af;
-  --primary-light: #eff6ff;
-  --saffron: #f97316; /* Warm saffron */
-  --saffron-light: #fff7ed;
-  --green: #15803d; /* Ashoka green */
-  --green-light: #f0fdf4;
-  --red: #dc2626;
-  --red-light: #fef2f2;
+  --gov-green-dark: #092c22;
+  --gov-green: #0d4436;
+  --gov-green-light: #165b49;
+  --gov-green-subtle: #ecfdf5;
+  --gov-green-border: #a7f3d0;
   
-  --bg-main: #f8fafc;
-  --card-bg: #ffffff;
-  --border-color: #e2e8f0;
-  --text-main: #0f172a;
-  --text-muted: #475569;
+  --gov-saffron: #c2410c;
+  --gov-saffron-light: #ea580c;
+  --gov-saffron-subtle: #fff7ed;
+  --gov-saffron-border: #fed7aa;
   
-  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-  --shadow-mic: 0 0 25px rgba(249, 115, 22, 0.4);
+  --gov-navy: #1e3a8a;
+  --gov-navy-light: #eff6ff;
+  --gov-navy-border: #bfdbfe;
+
+  --gov-gold: #d97706;
+  --gov-gold-subtle: #fef3c7;
+  --gov-gold-border: #fde68a;
+
+  --bg-page: #f8fafc;
+  --bg-card: #ffffff;
+  --border-light: #e2e8f0;
+  --border-medium: #cbd5e1;
+  --text-dark: #0f172a;
+  --text-body: #334155;
+  --text-muted: #64748b;
+
+  --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
   
-  --font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, 'Noto Sans Devanagari', sans-serif;
+  --font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Noto Sans Devanagari', 'Noto Sans', Roboto, sans-serif;
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-full: 9999px;
+}
+
+/* Accessibility classes */
+body.font-large {
+  font-size: 18px;
+}
+body.font-xlarge {
+  font-size: 20px;
+}
+body.high-contrast {
+  --bg-page: #000000;
+  --bg-card: #121212;
+  --border-light: #facc15;
+  --border-medium: #fde047;
+  --text-dark: #ffffff;
+  --text-body: #f8fafc;
+  --text-muted: #e2e8f0;
+  --gov-green: #000000;
+  --gov-green-dark: #000000;
+  color: #ffffff;
+  background-color: #000000;
+}
+body.reduced-motion * {
+  animation-duration: 0.001ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.001ms !important;
 }
 
 * {
@@ -31,8 +74,8 @@
 
 body {
   font-family: var(--font-family);
-  background-color: var(--bg-main);
-  color: var(--text-main);
+  background-color: var(--bg-page);
+  color: var(--text-dark);
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
   min-height: 100vh;
@@ -46,9 +89,53 @@ body {
 
 /* Animations */
 @keyframes pulse-ring {
-  0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(249, 115, 22, 0.7); }
-  70% { transform: scale(1.05); box-shadow: 0 0 0 16px rgba(249, 115, 22, 0); }
-  100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(249, 115, 22, 0); }
+  0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(234, 88, 12, 0.7); }
+  70% { transform: scale(1.06); box-shadow: 0 0 0 18px rgba(234, 88, 12, 0); }
+  100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(234, 88, 12, 0); }
+}
+
+@keyframes wave-bar {
+  0%, 100% { height: 8px; }
+  50% { height: 26px; }
+}
+
+@keyframes subtle-fade-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.fade-in {
+  animation: subtle-fade-in 0.25s ease-out forwards;
+}
+
+/* Soundwave Equalizer Bars */
+.soundwave {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  height: 32px;
+}
+.soundwave-bar {
+  width: 4px;
+  background-color: var(--gov-saffron);
+  border-radius: 4px;
+  height: 8px;
+}
+.soundwave.active .soundwave-bar:nth-child(1) {
+  animation: wave-bar 1.1s ease-in-out infinite 0.1s;
+}
+.soundwave.active .soundwave-bar:nth-child(2) {
+  animation: wave-bar 1.1s ease-in-out infinite 0.3s;
+}
+.soundwave.active .soundwave-bar:nth-child(3) {
+  animation: wave-bar 1.1s ease-in-out infinite 0.2s;
+}
+.soundwave.active .soundwave-bar:nth-child(4) {
+  animation: wave-bar 1.1s ease-in-out infinite 0.4s;
+}
+.soundwave.active .soundwave-bar:nth-child(5) {
+  animation: wave-bar 1.1s ease-in-out infinite 0.15s;
 }
 
 .mic-active {
@@ -56,13 +143,50 @@ body {
   background-color: #ea580c !important;
 }
 
-/* Utility buttons */
-.btn-primary {
-  background-color: var(--primary);
-  color: white;
-  padding: 12px 24px;
-  border-radius: 8px;
+/* Standard Layout Containers */
+.gov-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+  width: 100%;
+}
+
+.gov-container-wide {
+  max-width: 1360px;
+  margin: 0 auto;
+  padding: 0 24px;
+  width: 100%;
+}
+
+/* Buttons */
+.btn-gov-primary {
+  background-color: var(--gov-green);
+  color: #ffffff;
+  padding: 10px 20px;
+  border-radius: var(--radius-md);
   font-weight: 600;
+  font-size: 14px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  text-decoration: none;
+}
+.btn-gov-primary:hover {
+  background-color: var(--gov-green-light);
+  box-shadow: var(--shadow-sm);
+}
+
+.btn-gov-saffron {
+  background-color: var(--gov-saffron-light);
+  color: #ffffff;
+  padding: 10px 20px;
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  font-size: 14px;
   border: none;
   cursor: pointer;
   transition: all 0.2s;
@@ -71,68 +195,92 @@ body {
   justify-content: center;
   gap: 8px;
 }
-.btn-primary:hover {
-  background-color: var(--primary-hover);
+.btn-gov-saffron:hover {
+  background-color: var(--gov-saffron);
+  box-shadow: var(--shadow-sm);
 }
 
-.btn-secondary {
-  background-color: #f1f5f9;
-  color: var(--text-main);
-  border: 1px solid var(--border-color);
-  padding: 10px 20px;
-  border-radius: 8px;
-  font-weight: 500;
+.btn-gov-outline {
+  background-color: #ffffff;
+  color: var(--gov-green);
+  border: 1.5px solid var(--gov-green);
+  padding: 9px 18px;
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  font-size: 14px;
   cursor: pointer;
   transition: all 0.2s;
   display: inline-flex;
   align-items: center;
   gap: 8px;
 }
-.btn-secondary:hover {
-  background-color: #e2e8f0;
+.btn-gov-outline:hover {
+  background-color: var(--gov-green-subtle);
 }
 
-.btn-success {
-  background-color: var(--green);
-  color: white;
-  border: none;
-  padding: 12px 24px;
-  border-radius: 8px;
-  font-weight: 600;
+.btn-gov-ghost {
+  background: transparent;
+  color: var(--text-body);
+  border: 1px solid var(--border-medium);
+  padding: 8px 16px;
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  font-weight: 500;
   cursor: pointer;
   transition: all 0.2s;
-}
-.btn-success:hover {
-  background-color: #166534;
-}
-
-.badge {
   display: inline-flex;
   align-items: center;
-  padding: 4px 10px;
-  border-radius: 9999px;
-  font-size: 12px;
-  font-weight: 600;
+  gap: 6px;
 }
-.badge-demo {
-  background-color: #fef3c7;
-  color: #92400e;
-  border: 1px solid #fde68a;
-}
-.badge-confirmed {
-  background-color: var(--green-light);
-  color: var(--green);
-  border: 1px solid #bbf7d0;
-}
-.badge-pending {
-  background-color: #f1f5f9;
-  color: #64748b;
+.btn-gov-ghost:hover {
+  background: #f1f5f9;
+  border-color: #94a3b8;
 }
 
-/* Layout container */
-.container {
-  max-width: 960px;
-  margin: 0 auto;
-  padding: 16px;
-  width: 100%;
+/* Badges */
+.badge-gov {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 10px;
+  border-radius: var(--radius-full);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+}
+.badge-gov-proto {
+  background-color: var(--gov-gold-subtle);
+  color: #92400e;
+  border: 1px solid var(--gov-gold-border);
+}
+.badge-gov-green {
+  background-color: var(--gov-green-subtle);
+  color: #065f46;
+  border: 1px solid var(--gov-green-border);
+}
+.badge-gov-saffron {
+  background-color: var(--gov-saffron-subtle);
+  color: #9a3412;
+  border: 1px solid var(--gov-saffron-border);
+}
+.badge-gov-blue {
+  background-color: var(--gov-navy-light);
+  color: #1e40af;
+  border: 1px solid var(--gov-navy-border);
+}
+
+/* Scrollbar polish */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
 }

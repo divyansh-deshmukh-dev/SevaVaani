@@ -58,6 +58,13 @@ export class ApiClient {
     return res.json();
   }
 
+  public async getServices() {
+    await this.delayIfSimulated();
+    const res = await fetch(`${API_BASE}/api/services`);
+    if (!res.ok) throw new Error('Failed to load services catalog');
+    return res.json();
+  }
+
   public async getMetrics() {
     const res = await fetch(`${API_BASE}/api/metrics`);
     if (!res.ok) throw new Error('Failed to load metrics');

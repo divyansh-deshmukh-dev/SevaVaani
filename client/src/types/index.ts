@@ -18,6 +18,8 @@ export type SessionState =
   | 'GUIDANCE'
   | 'ERROR';
 
+export type VoiceState = 'IDLE' | 'LISTENING' | 'PROCESSING' | 'SPEAKING' | 'ERROR';
+
 export type FieldType =
   | 'text'
   | 'digits'
@@ -105,4 +107,45 @@ export interface TurnResponse {
   };
   transcript?: string;
   detectedIntent?: string;
+}
+
+export interface CitizenUser {
+  name: string;
+  mobile: string;
+  maskedAadhaar: string;
+  state: string;
+  district: string;
+  village: string;
+  isGuest: boolean;
+  isAuthenticated: boolean;
+}
+
+export interface ApplicationRecord {
+  applicationId: string;
+  serviceId: string;
+  serviceName: string;
+  date: string;
+  status: 'SUBMITTED (DEMO)' | 'IN_PROGRESS' | 'UNDER_REVIEW (DEMO)' | 'APPROVED (DEMO)';
+  step: number;
+  totalSteps: number;
+  isDemo: boolean;
+  formData: Record<string, unknown>;
+  lastUpdated: string;
+}
+
+export interface NotificationItem {
+  id: string;
+  title: string;
+  message: string;
+  timestamp: string;
+  type: 'info' | 'success' | 'warning' | 'demo';
+  read: boolean;
+  link?: string;
+}
+
+export interface AccessibilitySettings {
+  textSize: 'normal' | 'large' | 'xlarge';
+  highContrast: boolean;
+  reducedMotion: boolean;
+  voiceSpeed: 'normal' | 'slow' | 'fast';
 }
