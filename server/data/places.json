@@ -1,0 +1,38 @@
+{
+  "states": [
+    { "code": "MH", "en": "Maharashtra", "hi": "महाराष्ट्र", "mr": "महाराष्ट्र" },
+    { "code": "MP", "en": "Madhya Pradesh", "hi": "मध्य प्रदेश", "mr": "मध्य प्रदेश" },
+    { "code": "UP", "en": "Uttar Pradesh", "hi": "उत्तर प्रदेश", "mr": "उत्तर प्रदेश" },
+    { "code": "GJ", "en": "Gujarat", "hi": "गुजरात", "mr": "गुजरात" },
+    { "code": "RJ", "en": "Rajasthan", "hi": "राजस्थान", "mr": "राजस्थान" },
+    { "code": "BR", "en": "Bihar", "hi": "बिहार", "mr": "बिहार" },
+    { "code": "KA", "en": "Karnataka", "hi": "कर्नाटक", "mr": "कर्नाटक" },
+    { "code": "TG", "en": "Telangana", "hi": "तेलंगाना", "mr": "तेलंगणा" },
+    { "code": "TN", "en": "Tamil Nadu", "hi": "तमिलनाडु", "mr": "तमिळनाडू" },
+    { "code": "WB", "en": "West Bengal", "hi": "पश्चिम बंगाल", "mr": "पश्चिम बंगाल" },
+    { "code": "PB", "en": "Punjab", "hi": "पंजाब", "mr": "पंजाब" },
+    { "code": "HR", "en": "Haryana", "hi": "हरियाणा", "mr": "हरियाणा" }
+  ],
+  "districts": {
+    "Maharashtra": [
+      "Pune", "Nagpur", "Nashik", "Aurangabad", "Chhatrapati Sambhajinagar",
+      "Solapur", "Amravati", "Kolhapur", "Nanded", "Sangli", "Jalgaon",
+      "Akola", "Latur", "Dhule", "Ahmednagar", "Satara", "Beed", "Yavatmal",
+      "Buldhana", "Osmanabad", "Dharashiv", "Wardha", "Chandrapur", "Parbhani",
+      "Gondia", "Bhandara", "Gadchiroli", "Washim", "Hingoli", "Jalna", "Ratnagiri",
+      "Sindhudurg", "Raigad", "Thane", "Palghar", "Mumbai"
+    ],
+    "Madhya Pradesh": [
+      "Bhopal", "Indore", "Jabalpur", "Gwalior", "Ujjain", "Sagar", "Dewas",
+      "Satna", "Ratlam", "Rewa", "Katni", "Singrauli", "Burhanpur", "Khandwa",
+      "Bhind", "Chhindwara", "Guna", "Shivpuri", "Vidisha", "Chhatarpur",
+      "Damoh", "Mandsaur", "Khargone", "Neemuch", "Panna", "Sehore", "Hoshangabad",
+      "Narmadapuram", "Betul", "Seoni", "Datia", "Dhar", "Balaghat", "Raisen"
+    ],
+    "Uttar Pradesh": [
+      "Lucknow", "Kanpur", "Varanasi", "Prayagraj", "Agra", "Meerut", "Bareilly",
+      "Aligarh", "Moradabad", "Saharanpur", "Gorakhpur", "Faizabad", "Ayodhya",
+      "Jhansi", "Muzaffarnagar", "Mathura", "Budaun", "Rampur", "Shahjahanpur"
+    ]
+  }
+}

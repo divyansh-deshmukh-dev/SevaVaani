@@ -1,0 +1,21 @@
+{
+  "name": "sevavaani",
+  "version": "1.0.0",
+  "description": "Unified Multilingual Government Service Assistant",
+  "private": true,
+  "scripts": {
+    "dev:client": "npm --prefix client run dev",
+    "build:client": "npm --prefix client run build",
+    "test:server": ".\\server\\.venv\\Scripts\\pytest.exe tests/",
+    "start:server": ".\\server\\.venv\\Scripts\\python.exe -m uvicorn server.main:app --reload --port 8000"
+  },
+  "keywords": [
+    "voice-assistant",
+    "multilingual",
+    "government-services",
+    "fastapi",
+    "react"
+  ],
+  "author": "",
+  "license": "UNLICENSED"
+}

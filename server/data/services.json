@@ -1,0 +1,261 @@
+[
+  {
+    "serviceId": "pm_kisan",
+    "name": {
+      "en": "PM-Kisan Samman Nidhi Farmer Registration",
+      "hi": "पीएम-किसान सम्मान निधि किसान पंजीकरण",
+      "mr": "पीएम-किसान सन्मान निधी शेतकरी नोंदणी"
+    },
+    "category": "agriculture",
+    "aliases": [
+      "pm kisan",
+      "pm-kisan",
+      "pmkisan",
+      "kisan samman nidhi",
+      "kisan pension",
+      "farmer support",
+      "farmer financial help",
+      "kisan scheme",
+      "पीएम किसान",
+      "किसान सम्मान निधि",
+      "किसान योजना",
+      "किसान आर्थिक सहायता",
+      "शेतकरी सन्मान निधी",
+      "पीएम किसान योजना",
+      "शेतकरी योजना"
+    ],
+    "directApplicationSupported": true,
+    "guidanceAvailable": true,
+    "description": {
+      "en": "Direct income support of ₹6,000 per year in three equal installments to eligible farmer families.",
+      "hi": "पात्र किसान परिवारों को प्रति वर्ष ₹6,000 की प्रत्यक्ष आय सहायता तीन समान किस्तों में।",
+      "mr": "पात्र शेतकरी कुटुंबांना दरवर्षी तीन समान हप्त्यांमध्ये ₹६,००० चे थेट आर्थिक सहाय्य."
+    },
+    "formSchemaId": "pm_kisan_form",
+    "eligibilityRuleId": "pm_kisan_rules",
+    "apiAdapter": "demo_pm_kisan",
+    "requiredDocuments": [
+      {
+        "en": "Aadhaar Card (dummy in demo)",
+        "hi": "आधार कार्ड (डेमो में डमी)",
+        "mr": "आधार कार्ड (डेमोमध्ये डमी)"
+      },
+      {
+        "en": "Land ownership documents / Khasra-Khatauni",
+        "hi": "भूमि स्वामित्व दस्तावेज / खसरा-खतौनी",
+        "mr": "जमीन मालकी कागदपत्रे / ७/१२ उतारा"
+      },
+      {
+        "en": "Bank account linked with Aadhaar",
+        "hi": "आधार से जुड़ा बैंक खाता",
+        "mr": "आधारशी जोडलेले बँक खाते"
+      }
+    ],
+    "officialSource": "https://pmkisan.gov.in (Official Reference Only)",
+    "isDemo": true
+  },
+  {
+    "serviceId": "ration_card",
+    "name": {
+      "en": "National Food Security Ration Card Assistance",
+      "hi": "राष्ट्रीय खाद्य सुरक्षा राशन कार्ड सहायता",
+      "mr": "राष्ट्रीय अन्न सुरक्षा शिधापत्रिका (रेशन कार्ड) सहाय्य"
+    },
+    "category": "food_security",
+    "aliases": [
+      "ration card",
+      "ration",
+      "food security",
+      "nfsa",
+      "rashan card",
+      "राशन कार्ड",
+      "राशन",
+      "खाद्य सुरक्षा",
+      "शिधापत्रिका",
+      "रेशन कार्ड",
+      "रेशन"
+    ],
+    "directApplicationSupported": false,
+    "guidanceAvailable": true,
+    "description": {
+      "en": "Guidance on applying for new ration cards, adding family members, and subsidized food grain eligibility.",
+      "hi": "नया राशन कार्ड बनवाने, परिवार के सदस्य जोड़ने और रियायती खाद्यान्न पात्रता संबंधी मार्गदर्शन।",
+      "mr": "नवीन शिधापत्रिका, कुटुंबातील सदस्य जोडणे आणि अनुदानित अन्नधान्य पात्रतेबाबत मार्गदर्शन."
+    },
+    "formSchemaId": null,
+    "eligibilityRuleId": "ration_card_rules",
+    "apiAdapter": null,
+    "requiredDocuments": [
+      {
+        "en": "Aadhaar cards of all family members",
+        "hi": "परिवार के सभी सदस्यों के आधार कार्ड",
+        "mr": "कुटुंबातील सर्व सदस्यांची आधार कार्डे"
+      },
+      {
+        "en": "Income Certificate",
+        "hi": "आय प्रमाण पत्र",
+        "mr": "उत्पन्न प्रमाणपत्र"
+      },
+      {
+        "en": "Proof of Residence (Electricity bill, voter ID)",
+        "hi": "निवास प्रमाण (बिजली बिल, वोटर आईडी)",
+        "mr": "रहिवासी पुरावा (वीज बिल, मतदार ओळखपत्र)"
+      }
+    ],
+    "officialSource": "https://nfsa.gov.in (Official Reference Only)",
+    "isDemo": true
+  },
+  {
+    "serviceId": "old_age_pension",
+    "name": {
+      "en": "National Social Assistance Old Age Pension (IGNOAPS)",
+      "hi": "राष्ट्रीय सामाजिक सहायता वृद्धावस्था पेंशन योजना",
+      "mr": "राष्ट्रीय सामाजिक सहाय्य वृद्धपकाळ निवृत्तीवेतन योजना"
+    },
+    "category": "social_welfare",
+    "aliases": [
+      "old age pension",
+      "pension",
+      "vridha pension",
+      "senior citizen pension",
+      "पेंशन",
+      "वृद्धावस्था पेंशन",
+      "बुढ़ापा पेंशन",
+      "पेन्शन",
+      "श्रावण बाळ योजना",
+      "वृद्ध निवृत्तीवेतन"
+    ],
+    "directApplicationSupported": false,
+    "guidanceAvailable": true,
+    "description": {
+      "en": "Monthly pension assistance to senior citizens aged 60 and above living below the poverty line.",
+      "hi": "गरीबी रेखा से नीचे रहने वाले 60 वर्ष या उससे अधिक आयु के वरिष्ठ नागरिकों को मासिक पेंशन।",
+      "mr": "दारिद्र्यरेषेखालील ६० वर्षे आणि त्याहून अधिक वयाच्या ज्येष्ठ नागरिकांना मासिक निवृत्तीवेतन सहाय्य."
+    },
+    "formSchemaId": null,
+    "eligibilityRuleId": "pension_rules",
+    "apiAdapter": null,
+    "requiredDocuments": [
+      {
+        "en": "Age proof / Birth certificate / Aadhaar",
+        "hi": "आयु प्रमाण / जन्म प्रमाण पत्र / आधार",
+        "mr": "वयाचा पुरावा / जन्माचा दाखला / आधार"
+      },
+      {
+        "en": "BPL card or verified low-income certificate",
+        "hi": "बीपीएल कार्ड या सत्यापित अल्प आय प्रमाण पत्र",
+        "mr": "बीपीएल कार्ड किंवा प्रमाणित अल्प उत्पन्न दाखला"
+      },
+      {
+        "en": "Bank Passbook",
+        "hi": "बैंक पासबुक",
+        "mr": "बँक पासबुक"
+      }
+    ],
+    "officialSource": "https://nsap.nic.in (Official Reference Only)",
+    "isDemo": true
+  },
+  {
+    "serviceId": "post_matric_scholarship",
+    "name": {
+      "en": "Post-Matric Student Scholarship Assistance",
+      "hi": "पोस्ट-मैट्रिक छात्रवृत्ति सहायता",
+      "mr": "मॅट्रिकोत्तर विद्यार्थी शिष्यवृत्ती सहाय्य"
+    },
+    "category": "education",
+    "aliases": [
+      "scholarship",
+      "post matric scholarship",
+      "student scholarship",
+      "education help",
+      "chhatravritti",
+      "छात्रवृत्ति",
+      "स्कॉलरशिप",
+      "पढ़ाई सहायता",
+      "शिष्यवृत्ती",
+      "विद्यार्थी शिष्यवृत्ती",
+      "शिक्षण सहाय्य"
+    ],
+    "directApplicationSupported": false,
+    "guidanceAvailable": true,
+    "description": {
+      "en": "Financial support for eligible students pursuing higher secondary and post-matriculation studies.",
+      "hi": "उच्चतर माध्यमिक एवं मैट्रिक-उपरांत पढ़ाई कर रहे पात्र विद्यार्थियों के लिए आर्थिक सहायता।",
+      "mr": "उच्च माध्यमिक आणि मॅट्रिकोत्तर शिक्षण घेणाऱ्या पात्र विद्यार्थ्यांसाठी आर्थिक सहाय्य."
+    },
+    "formSchemaId": null,
+    "eligibilityRuleId": "scholarship_rules",
+    "apiAdapter": null,
+    "requiredDocuments": [
+      {
+        "en": "Marksheet of previous qualifying examination",
+        "hi": "पिछली उत्तीर्ण परीक्षा की अंकसूची",
+        "mr": "मागील उत्तीर्ण परीक्षेचे गुणपत्रक"
+      },
+      {
+        "en": "Caste Certificate (if applicable)",
+        "hi": "जाति प्रमाण पत्र (यदि लागू हो)",
+        "mr": "जातीचे प्रमाणपत्र (लागू असल्यास)"
+      },
+      {
+        "en": "Family Income Certificate",
+        "hi": "पारिवारिक आय प्रमाण पत्र",
+        "mr": "कौटुंबिक उत्पन्न दाखला"
+      }
+    ],
+    "officialSource": "https://scholarships.gov.in (Official Reference Only)",
+    "isDemo": true
+  },
+  {
+    "serviceId": "pm_awas_yojana",
+    "name": {
+      "en": "Pradhan Mantri Awas Yojana (Rural / Urban Housing)",
+      "hi": "प्रधानमंत्री आवास योजना (ग्रामीण / शहरी आवास सहायता)",
+      "mr": "प्रधानमंत्री आवास योजना (ग्रामीण / शहरी घरकुल सहाय्य)"
+    },
+    "category": "housing",
+    "aliases": [
+      "pm awas",
+      "awas yojana",
+      "housing scheme",
+      "ghar yojana",
+      "makan yojana",
+      "आवास योजना",
+      "पीएम आवास",
+      "घर योजना",
+      "मकान सहायता",
+      "आवास",
+      "घरकुल योजना",
+      "घरकुल"
+    ],
+    "directApplicationSupported": false,
+    "guidanceAvailable": true,
+    "description": {
+      "en": "Financial assistance for construction of pucca houses for homeless and families living in kutcha/dilapidated houses.",
+      "hi": "बेघर तथा कच्चे/जीर्ण-शीर्ण मकानों में रहने वाले परिवारों के लिए पक्के मकान के निर्माण हेतु वित्तीय सहायता।",
+      "mr": "बेघर आणि कच्च्या घरात राहणाऱ्या कुटुंबांसाठी पक्क्या घराच्या बांधकामासाठी आर्थिक सहाय्य."
+    },
+    "formSchemaId": null,
+    "eligibilityRuleId": "housing_rules",
+    "apiAdapter": null,
+    "requiredDocuments": [
+      {
+        "en": "Aadhaar Card",
+        "hi": "आधार कार्ड",
+        "mr": "आधार कार्ड"
+      },
+      {
+        "en": "Job card / BPL certificate / Income proof",
+        "hi": "जॉब कार्ड / बीपीएल प्रमाण पत्र / आय प्रमाण",
+        "mr": "जॉब कार्ड / बीपीएल प्रमाणपत्र / उत्पन्न दाखला"
+      },
+      {
+        "en": "Land or existing house condition proof / Geo-tagged photo",
+        "hi": "भूमि या मौजूदा मकान की स्थिति का प्रमाण / जियो-टैग्ड फोटो",
+        "mr": "जागेचा किंवा सध्याच्या घराच्या स्थितीचा पुरावा"
+      }
+    ],
+    "officialSource": "https://pmayg.nic.in (Official Reference Only)",
+    "isDemo": true
+  }
+]
