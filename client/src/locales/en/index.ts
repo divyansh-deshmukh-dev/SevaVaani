@@ -1,9 +1,19 @@
 export const en: Record<string, string> = {
   // Brand & Identity
-  appName: "SevaVaani (सेवावाणी)",
+  appName: "SevaVaani",
   tagline: "Unified Multilingual Government Service Assistant",
   prototypeBadge: "Digital Public Service Prototype • Demo",
   statutoryNotice: "Citizen Notice: SevaVaani Prototype MVP — Voice-Guided Multilingual Public Service Assistant. This is an R&D demonstration; applications are not submitted to live government portals.",
+  statutoryNoticeShort: "SevaVaani is a prototype. No real government applications are submitted.",
+  heroMobileTitle: "Government Services, in Your Own Voice.",
+  heroMobileSub: "Name a service or describe your need.",
+  voiceAssistantTitle: "SevaVaani Voice Assistant",
+  voiceAssistantPrompt: "Which government service do you need?",
+  trySuggestionsLabel: "Suggestions (Tap to try):",
+  kpiVoiceFactual: "Voice-Guided Assistant",
+  kpiVoiceSubFactual: "Step-by-Step Guidance",
+  kpiHonestFactual: "Transparent Prototype",
+  kpiHonestSubFactual: "Demo Verification System",
 
   // Navigation
   navHome: "Citizen Assistant",
@@ -258,10 +268,23 @@ export const en: Record<string, string> = {
   hypText: "Hypothesis Text",
   calcWer: "Calculate WER",
 
+  // Speech (STT/TTS) Feedback & Fallbacks
+  sttNotSupported: "Speech recognition is not supported in this browser. Please type your response below.",
+  sttPermissionDenied: "Microphone permission denied. Please allow microphone access in browser settings or type your response.",
+  sttNoSpeech: "No speech was detected. Please tap the microphone again or type your answer.",
+  sttNetwork: "Speech recognition network error. Please check your connection or type your answer.",
+  sttAudioCapture: "No microphone detected. Please check your microphone or type your answer.",
+  sttGenericError: "Speech recognition encountered an issue. You can also type your answer below.",
+  ttsVoiceUnavailable: "A native Hindi voice is not available on this device. Assistant text is displayed on screen.",
+  ttsVoiceUnavailableMr: "A native Marathi voice is not available on this device. Assistant text is displayed on screen.",
+  ttsVoiceUnavailableGeneric: "A native voice for the selected language is not available on this device. Text response is displayed on screen.",
+  ttsNoticeTitle: "Voice Notice",
+  errorState: "Error",
+
   // Footer
   footerAbout: "SevaVaani is an experimental R&D prototype designed to make Indian digital public services accessible through multilingual voice interaction.",
   footerLinksTitle: "Quick Links",
   footerServicesTitle: "Citizen Services",
   footerLegalTitle: "Legal & Privacy",
-  copyrightText: "© 2026 SevaVaani (सेवावाणी) • Digital Public Service Prototype. Not an official government website."
+  copyrightText: "© 2026 SevaVaani • Digital Public Service Prototype. Not an official government website."
 };

@@ -7,7 +7,7 @@ interface FooterProps {
   t: (key: string, fallback?: string) => string;
 }
 
-export function Footer({ language: _language, onTabChange, t }: FooterProps) {
+export function Footer({ language, onTabChange, t }: FooterProps) {
   return (
     <footer style={{ backgroundColor: '#092c22', color: '#ffffff', borderTop: '3px solid #165b49', marginTop: 'auto' }}>
       {/* 4-Column Directory */}
@@ -16,19 +16,18 @@ export function Footer({ language: _language, onTabChange, t }: FooterProps) {
           {/* Column 1: About & Mission */}
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
-              <div
+              <img
+                src="/logo.png"
+                alt={language === 'en' ? 'SevaVaani Logo' : 'सेवावाणी लोगो'}
                 style={{
-                  width: '32px',
-                  height: '32px',
+                  width: '36px',
+                  height: '36px',
+                  objectFit: 'contain',
                   borderRadius: '6px',
-                  background: 'linear-gradient(135deg, #f97316 33%, #ffffff 33%, #ffffff 66%, #15803d 66%)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center'
+                  backgroundColor: '#ffffff',
+                  padding: '2px'
                 }}
-              >
-                <div style={{ width: '10px', height: '10px', borderRadius: '50%', border: '1.5px solid #1e3a8a' }} />
-              </div>
+              />
               <h3 style={{ fontSize: '18px', fontWeight: 800, color: '#ffffff' }}>
                 {t('appName')}
               </h3>
@@ -126,7 +125,14 @@ export function Footer({ language: _language, onTabChange, t }: FooterProps) {
           }}
         >
           <div>
-            {t('copyrightText', '© 2026 सेवावाणी (SevaVaani) • डिजिटल पब्लिक सर्विस प्रोटोटाइप। वास्तविक सरकारी वेबसाइट नहीं है।')}
+            {t(
+              'copyrightText',
+              language === 'en'
+                ? '© 2026 SevaVaani • Digital Public Service Prototype. Not an official government website.'
+                : (language === 'mr'
+                ? '© 2026 सेवावाणी • डिजिटल पब्लिक सर्व्हिस प्रोटोटाइप. प्रत्यक्ष सरकारी संकेतस्थळ नाही.'
+                : '© 2026 सेवावाणी • डिजिटल पब्लिक सर्विस प्रोटोटाइप। वास्तविक सरकारी वेबसाइट नहीं है।')
+            )}
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
             <span>निर्मित: बहुभाषी भारतीय नागरिकों के लिए</span>

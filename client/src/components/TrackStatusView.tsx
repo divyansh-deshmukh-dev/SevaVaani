@@ -12,7 +12,7 @@ interface TrackStatusViewProps {
 }
 
 export function TrackStatusView({
-  language: _language,
+  language,
   searchAppId,
   onSetSearchAppId,
   searchedStatus,
@@ -241,7 +241,11 @@ export function TrackStatusView({
           >
             <ShieldCheck size={16} color="#0d4436" />
             <span>
-              नागरिक सूचना: यह स्थिति सेवावाणी शोध प्रोटोटाइप डेटाबेस द्वारा उत्पन्न की गई है। किसी वास्तविक सरकारी पोर्टल पर आवेदन अग्रसारित नहीं किया जाता।
+              {language === 'en'
+                ? 'Citizen Notice: This status is simulated from the SevaVaani research prototype database. No real applications are forwarded to live government servers.'
+                : (language === 'mr'
+                ? 'नागरिक सूचना: ही स्थिती सेवावाणी संशोधन प्रोटोटाइप डेटाबेसमधून दर्शवण्यात आली आहे. प्रत्यक्ष सरकारी पोर्टलवर अर्ज पाठवला जात नाही.'
+                : 'नागरिक सूचना: यह स्थिति सेवावाणी शोध प्रोटोटाइप डेटाबेस द्वारा उत्पन्न की गई है। किसी वास्तविक सरकारी पोर्टल पर आवेदन अग्रसारित नहीं किया जाता।')}
             </span>
           </div>
         </div>

@@ -7,7 +7,6 @@ import {
   Bell,
   Sliders,
   User,
-  Wifi,
   ShieldCheck,
   PhoneCall,
   FileText,
@@ -28,8 +27,6 @@ interface HeaderProps {
   onOpenNotifications: () => void;
   onOpenAccessibility: () => void;
   unreadCount: number;
-  simulate2G: boolean;
-  onToggle2G: () => void;
   t: (key: string, fallback?: string) => string;
 }
 
@@ -43,8 +40,6 @@ export function Header({
   onOpenNotifications,
   onOpenAccessibility,
   unreadCount,
-  simulate2G,
-  onToggle2G,
   t
 }: HeaderProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -65,19 +60,16 @@ export function Header({
   const helpdeskText = language === 'hi'
     ? 'नागरिक सहायता: 1800-000-DEMO (निशुल्क)'
     : (language === 'mr' ? 'नागरिक मदत कक्ष: 1800-000-DEMO (विनामूल्य)' : 'Citizen Helpdesk: 1800-000-DEMO (Toll-Free)');
-  const net2gLabel = language === 'hi'
-    ? `2G नेटवर्क: ${simulate2G ? 'सक्रिय (800ms)' : 'बंद'}`
-    : (language === 'mr' ? `2G नेटवर्क: ${simulate2G ? 'सक्रिय (800ms)' : 'बंद'}` : `2G Edge Network: ${simulate2G ? 'Active (800ms)' : 'OFF'}`);
-
   return (
     <header style={{ backgroundColor: '#ffffff', borderBottom: '1px solid var(--border-light)' }}>
       {/* 1. TOP STATUTORY ANNOUNCEMENT BAR */}
       <div
+        className="top-statutory-bar"
         style={{
           backgroundColor: '#092c22',
           color: '#ffffff',
-          padding: '6px 0',
-          fontSize: '12px',
+          padding: '4px 0',
+          fontSize: '11.5px',
           borderBottom: '1px solid #165b49'
         }}
       >
@@ -87,157 +79,111 @@ export function Header({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
-            gap: '12px',
-            flexWrap: 'wrap'
+            gap: '8px'
           }}
         >
           {/* Statutory alert badge & notice */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flex: 1, minWidth: '280px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', minWidth: 0, flex: 1, overflow: 'hidden' }}>
             <span
               style={{
                 backgroundColor: '#f59e0b',
                 color: '#78350f',
-                padding: '2px 8px',
-                borderRadius: '12px',
-                fontSize: '11px',
+                padding: '1px 6px',
+                borderRadius: '10px',
+                fontSize: '10px',
                 fontWeight: 800,
-                letterSpacing: '0.5px',
+                letterSpacing: '0.4px',
                 display: 'inline-flex',
                 alignItems: 'center',
-                gap: '4px'
+                gap: '3px',
+                flexShrink: 0
               }}
             >
-              <ShieldCheck size={12} />
-              {alertBadgeText}
+              <ShieldCheck size={11} />
+              <span className="hide-on-mobile">{alertBadgeText}</span>
+              <span className="show-on-mobile">डेमो</span>
             </span>
-            <span style={{ color: '#d1fae5', fontWeight: 500, fontSize: '12px' }}>
+            <span className="hide-on-mobile" style={{ color: '#d1fae5', fontWeight: 500, fontSize: '11.5px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
               {t('statutoryNotice')}
+            </span>
+            <span className="show-on-mobile" style={{ color: '#d1fae5', fontWeight: 500, fontSize: '11px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+              {t('statutoryNoticeShort', 'सेवावाणी एक प्रोटोटाइप है। वास्तविक सरकारी आवेदन नहीं भेजे जाते।')}
             </span>
           </div>
 
-          {/* Helpdesk Toll-Free and 2G Simulation */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexShrink: 0 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#a7f3d0', fontSize: '12px' }}>
-              <PhoneCall size={13} color="#f59e0b" />
+          {/* Helpdesk Toll-Free (Desktop only) */}
+          <div className="hide-on-mobile" style={{ display: 'flex', alignItems: 'center', gap: '14px', flexShrink: 0 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#a7f3d0', fontSize: '11.5px' }}>
+              <PhoneCall size={12} color="#f59e0b" />
               <span>{helpdeskText}</span>
             </div>
-
-            <button
-              onClick={onToggle2G}
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '6px',
-                background: simulate2G ? '#ea580c' : '#165b49',
-                color: '#ffffff',
-                border: '1px solid ' + (simulate2G ? '#f97316' : '#22c55e'),
-                borderRadius: '16px',
-                padding: '2px 10px',
-                fontSize: '11px',
-                cursor: 'pointer',
-                fontWeight: 600,
-                transition: 'all 0.2s'
-              }}
-              title="Simulates 2G edge network latency (800ms) for realistic rural verification"
-            >
-              <Wifi size={12} />
-              {net2gLabel}
-            </button>
           </div>
         </div>
       </div>
 
 
       {/* 2. MAIN INSTITUTIONAL HEADER BAR */}
-      <div style={{ padding: '12px 0', borderBottom: '1px solid var(--border-light)' }}>
+      <div className="mobile-header-bar" style={{ padding: '8px 0', borderBottom: '1px solid var(--border-light)' }}>
         <div
           className="gov-container-wide"
           style={{
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
-            flexWrap: 'wrap',
-            gap: '16px'
+            gap: '8px'
           }}
         >
           {/* Logo & Portal Identity */}
           <div
             onClick={() => onTabChange('assistant')}
-            style={{ display: 'flex', alignItems: 'center', gap: '14px', cursor: 'pointer' }}
+            style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer', minWidth: 0, flexShrink: 0 }}
           >
-            {/* Ashoka Chakra & Tricolor Emblem Motif */}
-            <div
+            {/* SevaVaani Official Logo */}
+            <img
+              src="/logo.png"
+              alt={language === 'en' ? 'SevaVaani Logo' : 'सेवावाणी लोगो'}
+              className="mobile-logo-img"
               style={{
-                width: '46px',
-                height: '46px',
-                borderRadius: '10px',
-                background: 'linear-gradient(135deg, #f97316 33%, #ffffff 33%, #ffffff 66%, #15803d 66%)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                border: '1.5px solid #cbd5e1',
-                boxShadow: 'var(--shadow-sm)',
+                width: '40px',
+                height: '40px',
+                objectFit: 'contain',
                 flexShrink: 0
               }}
-            >
-              <div
-                style={{
-                  width: '18px',
-                  height: '18px',
-                  borderRadius: '50%',
-                  border: '2px solid #1e3a8a',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center'
-                }}
-              >
-                <div style={{ width: '4px', height: '4px', borderRadius: '50%', backgroundColor: '#1e3a8a' }}></div>
-              </div>
-            </div>
+            />
 
-            <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <h1 style={{ fontSize: '24px', fontWeight: 800, color: '#0d4436', lineHeight: 1.1, letterSpacing: '-0.3px' }}>
-                  {t('appName')}
-                </h1>
-                <span
-                  style={{
-                    backgroundColor: '#fef3c7',
-                    color: '#92400e',
-                    border: '1px solid #fde68a',
-                    padding: '2px 8px',
-                    borderRadius: '4px',
-                    fontSize: '11px',
-                    fontWeight: 700
-                  }}
-                >
-                  {language === 'hi' ? 'प्रोटोटाइप एमवीपी' : (language === 'mr' ? 'प्रोटोटाइप एमव्हीपी' : 'PROTOTYPE MVP')}
-                </span>
-              </div>
-              <p style={{ fontSize: '13px', color: '#475569', marginTop: '2px' }}>
+            <div style={{ minWidth: 0 }}>
+              <h1 className="mobile-brand-title" style={{ fontSize: '20px', fontWeight: 800, color: '#0d4436', lineHeight: 1.1, letterSpacing: '-0.3px', margin: 0, whiteSpace: 'nowrap' }}>
+                {t('appName')}
+              </h1>
+              <p className="hide-on-mobile" style={{ fontSize: '12.5px', color: '#475569', marginTop: '2px' }}>
                 {t('tagline')}
               </p>
             </div>
           </div>
 
           {/* Right Header Controls */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexShrink: 0 }}>
             {/* Language Selector Pills */}
             <div
               style={{
                 display: 'flex',
                 alignItems: 'center',
                 backgroundColor: '#f1f5f9',
-                padding: '3px',
+                padding: '2px',
                 borderRadius: '8px',
                 border: '1px solid #e2e8f0'
               }}
             >
               {(['hi', 'mr', 'en'] as LanguageCode[]).map((lang) => {
-                const labels: Record<LanguageCode, string> = {
+                const labelsDesktop: Record<LanguageCode, string> = {
                   hi: 'हिंदी',
                   mr: 'मराठी',
                   en: 'English'
+                };
+                const labelsMobile: Record<LanguageCode, string> = {
+                  hi: 'हि',
+                  mr: 'म',
+                  en: 'EN'
                 };
                 const active = language === lang;
                 return (
@@ -245,26 +191,28 @@ export function Header({
                     key={lang}
                     onClick={() => onLanguageChange(lang)}
                     style={{
-                      padding: '5px 12px',
+                      padding: '4px 8px',
                       borderRadius: '6px',
                       border: 'none',
                       fontWeight: active ? 700 : 500,
-                      fontSize: '13px',
+                      fontSize: '12px',
                       cursor: 'pointer',
                       backgroundColor: active ? '#0d4436' : 'transparent',
                       color: active ? '#ffffff' : '#475569',
                       transition: 'all 0.15s'
                     }}
                   >
-                    {labels[lang]}
+                    <span className="hide-on-mobile">{labelsDesktop[lang]}</span>
+                    <span className="show-on-mobile">{labelsMobile[lang]}</span>
                   </button>
                 );
               })}
             </div>
 
-            {/* Accessibility Button */}
+            {/* Accessibility Button (Desktop only on main bar) */}
             <button
               onClick={onOpenAccessibility}
+              className="hide-on-mobile"
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
@@ -284,9 +232,10 @@ export function Header({
               <span>Aa</span>
             </button>
 
-            {/* Notifications Bell */}
+            {/* Notifications Bell (Desktop only on main bar) */}
             <button
               onClick={onOpenNotifications}
+              className="hide-on-mobile"
               style={{
                 position: 'relative',
                 display: 'inline-flex',
@@ -326,9 +275,10 @@ export function Header({
               )}
             </button>
 
-            {/* User Profile / Sign In Pill (Role-Aware) */}
+            {/* User Profile / Sign In Pill (Desktop only on main bar) */}
             <button
               onClick={onOpenAuth}
+              className="hide-on-mobile"
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
@@ -372,8 +322,8 @@ export function Header({
                 backgroundColor: mobileMenuOpen ? '#0d4436' : '#f1f5f9',
                 color: mobileMenuOpen ? '#ffffff' : '#0d4436',
                 border: '1px solid #cbd5e1',
-                width: '38px',
-                height: '38px',
+                width: '36px',
+                height: '36px',
                 borderRadius: '8px',
                 cursor: 'pointer',
                 transition: 'all 0.15s'
@@ -398,6 +348,129 @@ export function Header({
             animation: 'subtle-fade-in 0.2s ease-out'
           }}
         >
+          {/* Mobile Profile & Tools Row */}
+          <div
+            style={{
+              paddingBottom: '12px',
+              marginBottom: '12px',
+              borderBottom: '1px solid #e2e8f0',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              gap: '8px'
+            }}
+          >
+            <button
+              onClick={() => {
+                onOpenAuth();
+                setMobileMenuOpen(false);
+              }}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '8px',
+                backgroundColor: user.role === 'operator' && user.isAuthenticated
+                  ? '#fffbeb'
+                  : (user.isAuthenticated ? '#ecfdf5' : '#f8fafc'),
+                border: user.role === 'operator' && user.isAuthenticated
+                  ? '1.5px solid #f59e0b'
+                  : ('1.5px solid ' + (user.isAuthenticated ? '#10b981' : '#cbd5e1')),
+                padding: '7px 12px',
+                borderRadius: '8px',
+                fontSize: '13px',
+                fontWeight: 600,
+                color: user.role === 'operator' && user.isAuthenticated
+                  ? '#92400e'
+                  : (user.isAuthenticated ? '#065f46' : '#334155'),
+                cursor: 'pointer'
+              }}
+            >
+              {user.role === 'operator' && user.isAuthenticated ? (
+                <PhoneCall size={15} color="#d97706" />
+              ) : (
+                <User size={15} color={user.isAuthenticated ? '#059669' : '#64748b'} />
+              )}
+              <span>
+                {user.isAuthenticated
+                  ? (user.role === 'operator'
+                    ? `🎧 ${user.operatorId || 'OP-8821'}`
+                    : (user.isGuest ? t('guestUser') : user.name))
+                  : t('signIn')}
+              </span>
+            </button>
+
+            {/* Accessibility & Notifications */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <button
+                onClick={() => {
+                  onOpenAccessibility();
+                  setMobileMenuOpen(false);
+                }}
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '4px',
+                  backgroundColor: '#f8fafc',
+                  border: '1px solid #cbd5e1',
+                  padding: '6px 10px',
+                  borderRadius: '8px',
+                  fontSize: '12px',
+                  fontWeight: 600,
+                  color: '#334155',
+                  cursor: 'pointer'
+                }}
+                title="Accessibility Settings"
+              >
+                <Sliders size={14} color="#0d4436" />
+                <span>Aa</span>
+              </button>
+
+              <button
+                onClick={() => {
+                  onOpenNotifications();
+                  setMobileMenuOpen(false);
+                }}
+                style={{
+                  position: 'relative',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  backgroundColor: '#f8fafc',
+                  border: '1px solid #cbd5e1',
+                  width: '34px',
+                  height: '34px',
+                  borderRadius: '8px',
+                  cursor: 'pointer'
+                }}
+                title={t('notifications')}
+              >
+                <Bell size={15} color="#334155" />
+                {unreadCount > 0 && (
+                  <span
+                    style={{
+                      position: 'absolute',
+                      top: '-3px',
+                      right: '-3px',
+                      backgroundColor: '#ea580c',
+                      color: '#ffffff',
+                      borderRadius: '50%',
+                      fontSize: '9px',
+                      fontWeight: 700,
+                      width: '16px',
+                      height: '16px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      border: '2px solid #ffffff'
+                    }}
+                  >
+                    {unreadCount}
+                  </span>
+                )}
+              </button>
+            </div>
+          </div>
+
           <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginBottom: '14px' }}>
             {navItems.map((item) => {
               const Icon = item.icon;
@@ -446,30 +519,13 @@ export function Header({
             <div style={{ fontSize: '12px', color: '#64748b' }}>
               📞 टोल-फ्री: <strong>1800-000-DEMO</strong>
             </div>
-            <button
-              onClick={() => {
-                onToggle2G();
-                setMobileMenuOpen(false);
-              }}
-              style={{
-                background: simulate2G ? '#ea580c' : '#165b49',
-                color: '#ffffff',
-                border: 'none',
-                padding: '4px 10px',
-                borderRadius: '12px',
-                fontSize: '11.5px',
-                fontWeight: 600,
-                cursor: 'pointer'
-              }}
-            >
-              2G Edge: {simulate2G ? '800ms' : 'OFF'}
-            </button>
           </div>
         </div>
       )}
 
-      {/* 4. DEEP INSTITUTIONAL NAVIGATION BAR (Scrollable on tablet/mobile) */}
+      {/* 4. DEEP INSTITUTIONAL NAVIGATION BAR (Desktop only, hidden on mobile) */}
       <nav
+        className="hide-on-mobile"
         style={{
           backgroundColor: '#0d4436',
           boxShadow: 'var(--shadow-sm)'

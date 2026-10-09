@@ -225,11 +225,25 @@ export function ServicesView({
                   )}
                 </div>
 
-                {service.officialSourceMetadata?.portalUrl && (
-                  <div style={{ marginTop: '12px', fontSize: '11px', color: '#94a3b8', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                {(service.officialSourceMetadata?.url || service.officialSourceMetadata?.portalUrl) && (
+                  <a
+                    href={service.officialSourceMetadata.url || service.officialSourceMetadata.portalUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{
+                      marginTop: '12px',
+                      fontSize: '11.5px',
+                      color: '#0284c7',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      textDecoration: 'none',
+                      fontWeight: 500
+                    }}
+                  >
                     <span>{service.officialSourceMetadata.portalName || t('officialSource', 'आधिकारिक संदर्भ पोर्टल')}</span>
                     <ExternalLink size={12} />
-                  </div>
+                  </a>
                 )}
               </div>
             </div>

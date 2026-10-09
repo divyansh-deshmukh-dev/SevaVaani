@@ -61,6 +61,7 @@ async def health_check():
         "providers": {
             "llm": settings.LLM_PROVIDER,
             "stt": settings.STT_PROVIDER,
+            "sarvamConfigured": bool(settings.SARVAM_API_KEY and settings.SARVAM_API_KEY.strip()),
         }
     }
 
@@ -69,12 +70,14 @@ from server.routes.session import router as session_router
 from server.routes.discovery import router as discovery_router
 from server.routes.metrics import router as metrics_router
 from server.routes.eval import router as eval_router
+from server.routes.speech import router as speech_router
 
 app.include_router(services_router)
 app.include_router(session_router)
 app.include_router(discovery_router)
 app.include_router(metrics_router)
 app.include_router(eval_router)
+app.include_router(speech_router)
 
 if __name__ == "__main__":
     import uvicorn

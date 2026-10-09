@@ -74,7 +74,7 @@ export function VoiceAssistantWidget({
       case 'SPEAKING':
         return { label: t('speaking', 'सहायक बोल रहा है...'), bg: '#ecfdf5', border: '#a7f3d0', color: '#047857' };
       case 'ERROR':
-        return { label: 'त्रुटि (Error)', bg: '#fef2f2', border: '#fecaca', color: '#b91c1c' };
+        return { label: t('errorState', 'त्रुटि (Error)'), bg: '#fef2f2', border: '#fecaca', color: '#b91c1c' };
       case 'IDLE':
       default:
         return { label: t('ready', 'सहायक तैयार है'), bg: '#f1f5f9', border: '#cbd5e1', color: '#475569' };
@@ -85,6 +85,7 @@ export function VoiceAssistantWidget({
 
   return (
     <div
+      className="voice-widget-card"
       style={{
         backgroundColor: '#ffffff',
         borderRadius: '16px',
@@ -117,7 +118,7 @@ export function VoiceAssistantWidget({
             }}
           />
           <span style={{ fontSize: '13px', fontWeight: 700, letterSpacing: '0.3px' }}>
-            आवाज़ सहायक (VOICE ASSISTANT)
+            {t('voiceAssistantTitle', language === 'en' ? 'SevaVaani Voice Assistant' : (language === 'mr' ? 'सेवावाणी व्हॉइस सहाय्यक' : 'सेवावाणी आवाज़ सहायक'))}
           </span>
         </div>
 
@@ -147,7 +148,7 @@ export function VoiceAssistantWidget({
       </div>
 
       {/* 2. MAIN CONVERSATIONAL CARD BODY */}
-      <div style={{ padding: '24px', flex: 1, display: 'flex', flexDirection: 'column' }}>
+      <div className="voice-widget-body" style={{ padding: '24px', flex: 1, display: 'flex', flexDirection: 'column' }}>
         {/* Assistant Speech Bubble */}
         <div
           style={{
@@ -184,7 +185,7 @@ export function VoiceAssistantWidget({
           </button>
           <div style={{ flex: 1 }}>
             <div style={{ fontSize: '11px', fontWeight: 700, color: '#0d4436', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '3px' }}>
-              सेवावाणी सहायक:
+              {language === 'en' ? 'SevaVaani Assistant:' : (language === 'mr' ? 'सेवावाणी सहाय्यक:' : 'सेवावाणी सहायक:')}
             </div>
             <div style={{ fontSize: '16px', fontWeight: 600, color: '#0f172a', lineHeight: 1.45 }}>
               {currentMessage}
@@ -687,10 +688,10 @@ export function VoiceAssistantWidget({
               {/* Big Mic Button */}
               <button
                 onClick={onToggleListening}
-                className={isListening ? 'mic-active' : ''}
+                className={`voice-mic-btn ${isListening ? 'mic-active' : ''}`}
                 style={{
-                  width: '84px',
-                  height: '84px',
+                  width: '76px',
+                  height: '76px',
                   borderRadius: '50%',
                   backgroundColor: '#ea580c',
                   border: 'none',
@@ -705,7 +706,7 @@ export function VoiceAssistantWidget({
                 }}
                 title={t('micTapPrompt', 'बोलने के लिए माइक दबाएँ')}
               >
-                {isListening ? <MicOff size={38} /> : <Mic size={38} />}
+                {isListening ? <MicOff size={34} /> : <Mic size={34} />}
               </button>
 
               <div
@@ -772,7 +773,7 @@ export function VoiceAssistantWidget({
         {(turnResponse?.state === 'WELCOME' || turnResponse?.state === 'SERVICE_DISCOVERY') && (
           <div style={{ marginTop: '16px', paddingTop: '14px', borderTop: '1px solid #f1f5f9' }}>
             <div style={{ fontSize: '12px', fontWeight: 700, color: '#64748b', marginBottom: '8px' }}>
-              💡 {language === 'hi' ? 'बोलने या चुनने के लिए टैप करें:' : (language === 'mr' ? 'बोलण्यासाठी किंवा निवडण्यासाठी टॅप करा:' : 'Try speaking or tapping these examples:')}
+              💡 {t('trySuggestionsLabel', 'सुझाव (टैप करें):')}
             </div>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
               {(language === 'mr'

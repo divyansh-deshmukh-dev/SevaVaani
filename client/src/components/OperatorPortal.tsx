@@ -12,7 +12,6 @@ import {
   Filter,
   User,
   LogOut,
-  Wifi,
   Check,
   Send,
   PhoneForwarded,
@@ -36,8 +35,6 @@ interface OperatorPortalProps {
   services: ServiceDefinition[];
   onSwitchToCitizen: () => void;
   onSignOut: () => void;
-  simulate2G: boolean;
-  onToggle2G: () => void;
   t: (key: string, fallback?: string) => string;
 }
 
@@ -51,8 +48,6 @@ export function OperatorPortal({
   services,
   onSwitchToCitizen,
   onSignOut,
-  simulate2G,
-  onToggle2G,
   t
 }: OperatorPortalProps) {
   const [activeTab, setActiveTab] = useState<'escalations' | 'applications' | 'sop' | 'telemetry'>('escalations');
@@ -253,28 +248,6 @@ export function OperatorPortal({
               <span style={{ width: '7px', height: '7px', borderRadius: '50%', backgroundColor: '#ffffff' }} />
               {dutyStatus === 'active' ? t('opDutyActive') : t('opDutyBreak')}
             </button>
-
-            {/* 2G Simulation toggle */}
-            <button
-              onClick={onToggle2G}
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '5px',
-                background: simulate2G ? '#ea580c' : '#78350f',
-                color: '#ffffff',
-                border: '1px solid ' + (simulate2G ? '#f97316' : '#92400e'),
-                borderRadius: '12px',
-                padding: '2px 8px',
-                fontSize: '11px',
-                cursor: 'pointer',
-                fontWeight: 600
-              }}
-              title="Toggle simulated 2G rural connection latency"
-            >
-              <Wifi size={11} />
-              2G Edge: {simulate2G ? '800ms' : 'OFF'}
-            </button>
           </div>
         </div>
       </div>
@@ -299,22 +272,18 @@ export function OperatorPortal({
         >
           {/* Operator Console Logo */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-            <div
+            <img
+              src="/logo.png"
+              alt="SevaVaani Logo"
               style={{
                 width: '46px',
                 height: '46px',
-                borderRadius: '10px',
-                backgroundColor: '#78350f',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: '#fde047',
-                border: '1.5px solid #d97706',
-                boxShadow: 'var(--shadow-sm)'
+                objectFit: 'contain',
+                flexShrink: 0,
+                borderRadius: '8px',
+                backgroundColor: '#ffffff'
               }}
-            >
-              <PhoneCall size={24} />
-            </div>
+            />
 
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
@@ -1201,11 +1170,11 @@ export function OperatorPortal({
               </div>
 
               <div style={{ backgroundColor: '#ffffff', borderRadius: '12px', border: '1.5px solid #cbd5e1', padding: '18px' }}>
-                <div style={{ fontSize: '12px', color: '#64748b', fontWeight: 600 }}>2G Edge लेटेंसी सिमुलेशन</div>
-                <div style={{ fontSize: '26px', fontWeight: 900, color: simulate2G ? '#ea580c' : '#475569', marginTop: '6px' }}>
-                  {simulate2G ? '800ms' : 'Disabled'}
+                <div style={{ fontSize: '12px', color: '#64748b', fontWeight: 600 }}>सिस्टम उपलब्धता (System Uptime)</div>
+                <div style={{ fontSize: '26px', fontWeight: 900, color: '#047857', marginTop: '6px' }}>
+                  99.9%
                 </div>
-                <div style={{ fontSize: '12px', color: '#475569', marginTop: '4px' }}>Rural verified payload</div>
+                <div style={{ fontSize: '12px', color: '#475569', marginTop: '4px' }}>Optimal production tier</div>
               </div>
             </div>
 

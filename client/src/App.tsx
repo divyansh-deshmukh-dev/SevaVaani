@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import {
   Mic,
   Search,
@@ -32,6 +32,8 @@ import { AccessibilityModal } from './components/AccessibilityModal';
 import { ServicesView } from './components/ServicesView';
 import { ApplicationLauncherView } from './components/ApplicationLauncherView';
 import { ServiceDetailView } from './components/ServiceDetailView';
+import { ErrorBoundary } from './components/ErrorBoundary';
+import { FALLBACK_SERVICES } from './data/fallbackServices';
 import { ApplicationsView } from './components/ApplicationsView';
 import { TrackStatusView } from './components/TrackStatusView';
 import { DocumentsView } from './components/DocumentsView';
@@ -60,9 +62,7 @@ export function App() {
   const [manualFieldValue, setManualFieldValue] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string>('');
-
-  // 2G Network Simulation toggle
-  const [simulate2G, setSimulate2G] = useState<boolean>(false);
+  const isTurnInFlightRef = useRef<boolean>(false);
 
   // Status Tracker & Operator states
   const [searchAppId, setSearchAppId] = useState<string>('DEMO-PMK-20261009-001');
@@ -76,7 +76,7 @@ export function App() {
   const [metricsData, setMetricsData] = useState<any>(null);
 
   // Services Catalog
-  const [services, setServices] = useState<ServiceDefinition[]>([]);
+  const [services, setServices] = useState<ServiceDefinition[]>(FALLBACK_SERVICES);
 
   // User Profile
   const [user, setUser] = useState<CitizenUser>({
@@ -168,6 +168,17 @@ export function App() {
     if (accessibility.reducedMotion) document.body.classList.add('reduced-motion');
   }, [accessibility]);
 
+  // Synchronize Tab Title with Selected Language
+  useEffect(() => {
+    if (language === 'en') {
+      document.title = 'SevaVaani - Unified Multilingual Government Service Assistant';
+    } else if (language === 'mr') {
+      document.title = 'सेवावाणी - एकीकृत बहुभाषिक सरकारी सेवा सहाय्यक';
+    } else {
+      document.title = 'सेवावाणी - एकीकृत बहुभाषी सरकारी सेवा सहायक';
+    }
+  }, [language]);
+
   // Initialize Session and Catalog on mount
   useEffect(() => {
     initSession(language);
@@ -177,9 +188,11 @@ export function App() {
   const loadServicesCatalog = async () => {
     try {
       const data = await apiClient.getServices();
-      setServices(data);
+      if (Array.isArray(data) && data.length > 0) {
+        setServices(data);
+      }
     } catch {
-      // Fallback fallback catalog is automatically populated if backend offline
+      // Fallback catalog remains active if backend is offline or delayed
     }
   };
 
@@ -209,37 +222,136 @@ export function App() {
     }
   };
 
+  // URL Hash Routing and Browser History Synchronizer
+  useEffect(() => {
+    const handleHashSync = () => {
+      const hash = window.location.hash || '';
+      if (hash.startsWith('#service/')) {
+        const sId = decodeURIComponent(hash.replace('#service/', '').trim());
+        const found =
+          services.find((s) => s.serviceId === sId || s.id === sId) ||
+          FALLBACK_SERVICES.find((s) => s.serviceId === sId || s.id === sId);
+        if (found) {
+          setSelectedServiceForDetail(found);
+          setActiveTab('service_detail');
+        } else {
+          setActiveTab('service_detail');
+          setSelectedServiceForDetail(null);
+        }
+      } else if (hash === '#services') {
+        setActiveTab('services');
+        setSelectedServiceForDetail(null);
+      } else if (hash === '#launcher') {
+        setActiveTab('launcher');
+        setSelectedServiceForDetail(null);
+      } else if (hash === '#applications') {
+        setActiveTab('applications');
+        setSelectedServiceForDetail(null);
+      } else if (hash === '#track') {
+        setActiveTab('track');
+        setSelectedServiceForDetail(null);
+      } else if (hash === '#docs') {
+        setActiveTab('docs');
+        setSelectedServiceForDetail(null);
+      } else if (hash === '#help') {
+        setActiveTab('help');
+        setSelectedServiceForDetail(null);
+      } else if (hash === '#eval') {
+        setActiveTab('eval');
+        setSelectedServiceForDetail(null);
+      } else if (hash === '#about') {
+        setActiveTab('about');
+        setSelectedServiceForDetail(null);
+      } else if (hash === '#operator') {
+        setActiveTab('operator');
+        setSelectedServiceForDetail(null);
+      } else if (hash === '#assistant' || hash === '' || hash === '#') {
+        setActiveTab('assistant');
+        setSelectedServiceForDetail(null);
+      }
+    };
+
+    handleHashSync();
+    window.addEventListener('hashchange', handleHashSync);
+    window.addEventListener('popstate', handleHashSync);
+    return () => {
+      window.removeEventListener('hashchange', handleHashSync);
+      window.removeEventListener('popstate', handleHashSync);
+    };
+  }, [services]);
+
+  const navigateToTab = (tab: any) => {
+    setActiveTab(tab);
+    setErrorMessage('');
+    if (tab === 'services') window.location.hash = '#services';
+    else if (tab === 'assistant') window.location.hash = '#assistant';
+    else if (tab === 'launcher') window.location.hash = '#launcher';
+    else if (tab === 'applications') window.location.hash = '#applications';
+    else if (tab === 'track') window.location.hash = '#track';
+    else if (tab === 'docs') window.location.hash = '#docs';
+    else if (tab === 'help') window.location.hash = '#help';
+    else if (tab === 'eval') window.location.hash = '#eval';
+    else if (tab === 'about') window.location.hash = '#about';
+    else if (tab === 'operator') window.location.hash = '#operator';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   const handleOpenServiceDetail = (service: ServiceDefinition) => {
     setSelectedServiceForDetail(service);
     setActiveTab('service_detail');
     setErrorMessage('');
+    const sId = service.serviceId || service.id;
+    if (sId) {
+      window.location.hash = `#service/${sId}`;
+    }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleBackFromDetail = () => {
+    setSelectedServiceForDetail(null);
+    setActiveTab('services');
+    window.location.hash = '#services';
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleApplyService = (serviceId: string) => {
-    const s = services.find((x) => x.serviceId === serviceId);
     setActiveTab('assistant');
-    const query = s ? (s.name[language] || s.name.en || serviceId) : serviceId;
-    handleSendText(query);
+    window.location.hash = '#assistant';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    handleAction('APPLY_NOW', serviceId);
   };
 
-  const toggle2G = () => {
-    const next = !simulate2G;
-    setSimulate2G(next);
-    apiClient.simulate2G = next;
-  };
-
-
-  const speakMessage = (text: string, lang: LanguageCode) => {
+  const speakMessage = async (text: string, lang: LanguageCode) => {
     setVoiceState('SPEAKING');
-    speechService.speak(text, lang, () => {
+    const result = await speechService.speak(
+      text,
+      lang,
+      () => {
+        setVoiceState('IDLE');
+      },
+      () => {
+        setVoiceState('IDLE');
+      }
+    );
+
+    if (!result.spoken) {
       setVoiceState('IDLE');
-    });
+      if (result.reason === 'no_voice') {
+        const noticeKey =
+          lang === 'mr'
+            ? 'ttsVoiceUnavailableMr'
+            : lang === 'hi'
+            ? 'ttsVoiceUnavailable'
+            : 'ttsVoiceUnavailableGeneric';
+        setErrorMessage(t(noticeKey));
+      }
+    }
   };
 
   // Turn submission
   const handleSendText = async (textToSend: string) => {
-    if (!textToSend.trim() || !sessionId) return;
+    if (!textToSend.trim() || isTurnInFlightRef.current || isLoading) return;
+    isTurnInFlightRef.current = true;
     setIsLoading(true);
     setVoiceState('PROCESSING');
     setErrorMessage('');
@@ -248,10 +360,34 @@ export function App() {
     speechService.cancelSpeech();
 
     try {
-      const res = await apiClient.sendTurn(sessionId, {
-        text: textToSend.trim(),
-        language
-      });
+      let activeSid = sessionId;
+      if (!activeSid) {
+        const initRes = await apiClient.createSession(language);
+        activeSid = initRes.sessionId;
+        setSessionId(initRes.sessionId);
+      }
+
+      let res: TurnResponse;
+      try {
+        res = await apiClient.sendTurn(activeSid, {
+          text: textToSend.trim(),
+          language
+        });
+      } catch (err: any) {
+        if (err.message?.includes('Not Found') || err.message?.includes('404')) {
+          // Auto-heal session after server restart
+          const newSession = await apiClient.createSession(language);
+          activeSid = newSession.sessionId;
+          setSessionId(newSession.sessionId);
+          res = await apiClient.sendTurn(activeSid, {
+            text: textToSend.trim(),
+            language
+          });
+        } else {
+          throw err;
+        }
+      }
+
       setTurnResponse(res);
       setTypedInput('');
       handlePostTurnEffects(res);
@@ -261,11 +397,11 @@ export function App() {
       setErrorMessage(err.message || 'Request failed. Please try again.');
     } finally {
       setIsLoading(false);
+      isTurnInFlightRef.current = false;
     }
   };
 
   const handleAction = async (action: string, value?: unknown, fieldId?: string) => {
-    if (!sessionId) return;
     setIsLoading(true);
     setVoiceState('PROCESSING');
     setErrorMessage('');
@@ -273,12 +409,38 @@ export function App() {
     speechService.cancelSpeech();
 
     try {
-      const res = await apiClient.sendAction(sessionId, {
-        action,
-        value,
-        fieldId,
-        language
-      });
+      let activeSid = sessionId;
+      if (!activeSid) {
+        const initRes = await apiClient.createSession(language);
+        activeSid = initRes.sessionId;
+        setSessionId(initRes.sessionId);
+      }
+
+      let res: TurnResponse;
+      try {
+        res = await apiClient.sendAction(activeSid, {
+          action,
+          value,
+          fieldId,
+          language
+        });
+      } catch (err: any) {
+        if (err.message?.includes('Not Found') || err.message?.includes('404')) {
+          // Auto-heal session after server restart
+          const newSession = await apiClient.createSession(language);
+          activeSid = newSession.sessionId;
+          setSessionId(newSession.sessionId);
+          res = await apiClient.sendAction(activeSid, {
+            action,
+            value,
+            fieldId,
+            language
+          });
+        } else {
+          throw err;
+        }
+      }
+
       setTurnResponse(res);
       setManualFieldValue('');
       handlePostTurnEffects(res);
@@ -286,7 +448,7 @@ export function App() {
 
       // If handoff triggered, record it
       if (res.state === 'HANDOFF') {
-        const h = await apiClient.getHandoff(sessionId);
+        const h = await apiClient.getHandoff(activeSid);
         setHandoffRecord(h);
       }
     } catch (err: any) {
@@ -346,13 +508,35 @@ export function App() {
           setLiveTranscript(transcript);
           if (isFinal) {
             setIsListening(false);
-            handleSendText(transcript);
+            if (!isTurnInFlightRef.current && !isLoading) {
+              handleSendText(transcript);
+            }
           }
         },
         (error) => {
           setIsListening(false);
           setVoiceState('ERROR');
-          setErrorMessage(`Microphone notice: ${error}. You can also type your answer.`);
+          let errorKey = 'sttGenericError';
+          switch (error.code) {
+            case 'not-supported':
+              errorKey = 'sttNotSupported';
+              break;
+            case 'not-allowed':
+              errorKey = 'sttPermissionDenied';
+              break;
+            case 'no-speech':
+              errorKey = 'sttNoSpeech';
+              break;
+            case 'network':
+              errorKey = 'sttNetwork';
+              break;
+            case 'audio-capture':
+              errorKey = 'sttAudioCapture';
+              break;
+            default:
+              errorKey = 'sttGenericError';
+          }
+          setErrorMessage(t(errorKey));
         },
         () => {
           setIsListening(false);
@@ -473,8 +657,6 @@ export function App() {
           });
           setActiveTab('assistant');
         }}
-        simulate2G={simulate2G}
-        onToggle2G={toggle2G}
         t={t}
       />
     );
@@ -488,16 +670,13 @@ export function App() {
         onLanguageChange={handleLanguageChange}
         activeTab={activeTab}
         onTabChange={(tab) => {
-          setActiveTab(tab);
-          setErrorMessage('');
+          navigateToTab(tab);
         }}
         user={user}
         onOpenAuth={() => setIsAuthModalOpen(true)}
         onOpenNotifications={() => setIsNotificationsOpen(true)}
         onOpenAccessibility={() => setIsAccessibilityOpen(true)}
         unreadCount={unreadCount}
-        simulate2G={simulate2G}
-        onToggle2G={toggle2G}
         t={t}
       />
 
@@ -526,38 +705,29 @@ export function App() {
 
       {/* 3. Main Content Views */}
       <main style={{ flex: 1 }}>
-        {/* VIEW 1: HOME & CITIZEN ASSISTANT */}
-        {activeTab === 'assistant' && (
+        <ErrorBoundary onReset={handleBackFromDetail}>
+          {/* VIEW 1: HOME & CITIZEN ASSISTANT */}
+          {activeTab === 'assistant' && (
           <div>
             {/* HERO SECTION WITH EMBEDDED VOICE ASSISTANT */}
-            <section
-              style={{
-                backgroundColor: '#ffffff',
-                borderBottom: '1px solid var(--border-light)',
-                padding: '40px 0 48px'
-              }}
-            >
+            <section className="hero-section">
               <div className="gov-container-wide">
+                {/* Mobile Voice Hero Header (Visible only on mobile <= 880px) */}
+                <div className="show-on-mobile hero-mobile-intro">
+                  <h2 className="hero-mobile-title">
+                    {t('heroMobileTitle', 'सरकारी सेवाएं, आपकी अपनी आवाज़ में।')}
+                  </h2>
+                  <p className="hero-mobile-sub">
+                    {t('heroMobileSub', 'सेवा बताएं या अपनी समस्या साझा करें।')}
+                  </p>
+                </div>
+
                 <div className="hero-grid">
-                  {/* Left Column: Hero Headlines & Value Props */}
-                  <div>
+                  {/* Left Column: Hero Headlines & Value Props (Visible on desktop) */}
+                  <div className="hero-text-col hide-on-mobile">
                     {/* Badge */}
-                    <div
-                      style={{
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        gap: '8px',
-                        backgroundColor: '#fff7ed',
-                        border: '1px solid #fed7aa',
-                        color: '#c2410c',
-                        padding: '6px 14px',
-                        borderRadius: '20px',
-                        fontSize: '12.5px',
-                        fontWeight: 700,
-                        marginBottom: '16px'
-                      }}
-                    >
-                      <span>🇮🇳</span>
+                    <div className="hero-badge">
+                      <span className="hero-badge-dot" />
                       <span>{t('heroBadge')}</span>
                     </div>
 
@@ -576,58 +746,37 @@ export function App() {
 
                     {/* 3 KPI Feature Stat Cards */}
                     <div className="kpi-grid">
-                      <div
-                        style={{
-                          backgroundColor: '#ecfdf5',
-                          border: '1.5px solid #a7f3d0',
-                          padding: '14px 16px',
-                          borderRadius: '12px'
-                        }}
-                      >
-                        <div style={{ fontSize: '15px', fontWeight: 800, color: '#065f46' }}>
-                          {t('kpiVoice', '100% आवाज़-निर्देशित')}
+                      <div className="kpi-card">
+                        <div className="kpi-card-title">
+                          {t('kpiVoiceFactual', 'आवाज़-निर्देशित सहायता')}
                         </div>
-                        <div style={{ fontSize: '12px', color: '#047857', marginTop: '3px' }}>
-                          {t('kpiVoiceSub', 'सरल और चरणबद्ध फॉर्म')}
+                        <div className="kpi-card-sub">
+                          {t('kpiVoiceSubFactual', 'चरणबद्ध फॉर्म व मार्गदर्शन')}
                         </div>
                       </div>
 
-                      <div
-                        style={{
-                          backgroundColor: '#eff6ff',
-                          border: '1.5px solid #bfdbfe',
-                          padding: '14px 16px',
-                          borderRadius: '12px'
-                        }}
-                      >
-                        <div style={{ fontSize: '15px', fontWeight: 800, color: '#1e40af' }}>
+                      <div className="kpi-card">
+                        <div className="kpi-card-title">
                           {t('kpiLangs', '3 भाषाएं उपलब्ध')}
                         </div>
-                        <div style={{ fontSize: '12px', color: '#1d4ed8', marginTop: '3px' }}>
+                        <div className="kpi-card-sub">
                           {t('kpiLangsSub', 'हिंदी • मराठी • English')}
                         </div>
                       </div>
 
-                      <div
-                        style={{
-                          backgroundColor: '#fff7ed',
-                          border: '1.5px solid #fed7aa',
-                          padding: '14px 16px',
-                          borderRadius: '12px'
-                        }}
-                      >
-                        <div style={{ fontSize: '15px', fontWeight: 800, color: '#9a3412' }}>
-                          {t('kpiHonest', 'पूर्ण पारदर्शी')}
+                      <div className="kpi-card">
+                        <div className="kpi-card-title">
+                          {t('kpiHonestFactual', 'पारदर्शी प्रोटोटाइप')}
                         </div>
-                        <div style={{ fontSize: '12px', color: '#c2410c', marginTop: '3px' }}>
-                          {t('kpiHonestSub', 'प्रोटोटाइप डेमो')}
+                        <div className="kpi-card-sub">
+                          {t('kpiHonestSubFactual', 'डेमो सत्यापन प्रणाली')}
                         </div>
                       </div>
                     </div>
                   </div>
 
-                  {/* Right Column: Embedded Voice Assistant Widget */}
-                  <div>
+                  {/* Right Column: Embedded Voice Assistant Widget (Voice-first on mobile) */}
+                  <div className="hero-voice-col">
                     <VoiceAssistantWidget
                       language={language}
                       turnResponse={turnResponse}
@@ -652,6 +801,19 @@ export function App() {
                       onOpenServiceDetail={handleOpenServiceDetail}
                       t={t}
                     />
+
+                    {/* Compact Factual KPI Row on Mobile */}
+                    <div className="kpi-mobile-row">
+                      <span className="kpi-mobile-badge">
+                        🎤 {t('kpiVoiceFactual', 'आवाज़-निर्देशित सहायता')}
+                      </span>
+                      <span className="kpi-mobile-badge">
+                        🌐 {t('kpiLangs', '3 भाषाएं')}
+                      </span>
+                      <span className="kpi-mobile-badge">
+                        🛡️ {t('kpiHonestFactual', 'पारदर्शी प्रोटोटाइप')}
+                      </span>
+                    </div>
                   </div>
 
                 </div>
@@ -988,15 +1150,89 @@ export function App() {
         )}
 
         {/* VIEW: SERVICE DETAIL & GUIDANCE */}
-        {activeTab === 'service_detail' && selectedServiceForDetail && (
-          <ServiceDetailView
-            service={selectedServiceForDetail}
-            language={language}
-            onBack={() => setActiveTab('services')}
-            onApplyService={handleApplyService}
-            t={t}
-          />
-        )}
+        {activeTab === 'service_detail' && (() => {
+          const serviceToRender =
+            selectedServiceForDetail ||
+            (() => {
+              const hash = window.location.hash || '';
+              const match = hash.match(/^#service\/([a-zA-Z0-9_-]+)/);
+              if (match) {
+                const sId = decodeURIComponent(match[1]);
+                return (
+                  services.find((s) => s.serviceId === sId || s.id === sId) ||
+                  FALLBACK_SERVICES.find((s) => s.serviceId === sId || s.id === sId) ||
+                  null
+                );
+              }
+              return null;
+            })();
+
+          if (serviceToRender) {
+            return (
+              <ServiceDetailView
+                service={serviceToRender}
+                language={language}
+                onBack={handleBackFromDetail}
+                onApplyService={handleApplyService}
+                t={t}
+              />
+            );
+          }
+
+          return (
+            <div className="gov-container" style={{ padding: '48px 16px', textAlign: 'center' }}>
+              <div
+                style={{
+                  maxWidth: '560px',
+                  margin: '0 auto',
+                  backgroundColor: '#ffffff',
+                  borderRadius: '16px',
+                  border: '1.5px solid #cbd5e1',
+                  padding: '36px 28px',
+                  boxShadow: 'var(--shadow-sm)'
+                }}
+              >
+                <div
+                  style={{
+                    width: '56px',
+                    height: '56px',
+                    borderRadius: '50%',
+                    backgroundColor: '#f1f5f9',
+                    color: '#64748b',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    marginBottom: '16px'
+                  }}
+                >
+                  <Search size={28} />
+                </div>
+                <h2 style={{ fontSize: '20px', fontWeight: 800, color: '#0d4436', marginBottom: '8px' }}>
+                  {language === 'en'
+                    ? 'Service Details Not Found'
+                    : language === 'mr'
+                    ? 'सेवा तपशील सापडला नाही'
+                    : 'सेवा विवरण उपलब्ध नहीं है'}
+                </h2>
+                <p style={{ fontSize: '14.5px', color: '#64748b', lineHeight: 1.6, marginBottom: '24px' }}>
+                  {language === 'en'
+                    ? 'The requested government service could not be located. Please choose from the active service directory.'
+                    : language === 'mr'
+                    ? 'विनंती केलेली सरकारी सेवा सापडली नाही. कृपया सेवा सूचीमधून योग्य सेवा निवडा.'
+                    : 'अनुरोधित सरकारी सेवा नहीं मिल सकी। कृपया उपलब्ध सेवा निर्देशिका से उपयुक्त सेवा का चयन करें।'}
+                </p>
+                <button
+                  onClick={handleBackFromDetail}
+                  className="btn-gov-primary"
+                  style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '10px 22px' }}
+                >
+                  <ArrowRight size={16} />
+                  {t('backToCatalog', '← सेवा सूची पर वापस जाएं')}
+                </button>
+              </div>
+            </div>
+          );
+        })()}
 
 
         {/* VIEW 3: MY APPLICATIONS */}
@@ -1138,14 +1374,14 @@ export function App() {
             t={t}
           />
         )}
+        </ErrorBoundary>
       </main>
 
       {/* 4. Multi-column Public Service Footer */}
       <Footer
         language={language}
         onTabChange={(tab) => {
-          setActiveTab(tab);
-          window.scrollTo({ top: 0, behavior: 'smooth' });
+          navigateToTab(tab);
         }}
         t={t}
       />

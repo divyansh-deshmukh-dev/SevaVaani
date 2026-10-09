@@ -6,10 +6,7 @@ export class ApiClient {
   public simulate2G: boolean = false;
 
   private async delayIfSimulated() {
-    if (this.simulate2G) {
-      // Simulate slow 2G high latency (approx 800ms)
-      await new Promise((resolve) => setTimeout(resolve, 800));
-    }
+    // No artificial network latency
   }
 
   public async createSession(lang: LanguageCode = 'hi'): Promise<TurnResponse> {
@@ -121,6 +118,12 @@ export class ApiClient {
       body: JSON.stringify({ reference, hypothesis, language })
     });
     if (!res.ok) throw new Error('Failed to calculate WER');
+    return res.json();
+  }
+
+  public async getSpeechStatus() {
+    const res = await fetch(`${API_BASE}/api/speech/status`);
+    if (!res.ok) throw new Error('Failed to load speech provider status');
     return res.json();
   }
 }

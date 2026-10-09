@@ -39,9 +39,11 @@ export interface LocalizedString {
 }
 
 export interface GuidanceStep {
-  stepNumber: number;
+  stepNumber?: number;
+  step?: number;
   title: LocalizedString;
-  description: LocalizedString;
+  description?: LocalizedString;
+  details?: LocalizedString;
 }
 
 export interface GuidanceFaq {
@@ -55,21 +57,24 @@ export interface ServiceGuidance {
   steps?: GuidanceStep[];
   faqs?: GuidanceFaq[];
   disclaimer?: LocalizedString;
+  requiredDocuments?: LocalizedString[];
 }
 
 export interface OfficialSourceMetadata {
   portalName?: string;
   portalUrl?: string;
-  department?: string;
+  url?: string;
+  department?: string | LocalizedString;
   tollFree?: string;
   lastVerified?: string;
 }
 
 export interface ServiceDefinition {
   serviceId: string;
+  id?: string;
   name: LocalizedString;
   category: string;
-  aliases: string[];
+  aliases?: string[];
   directApplicationSupported: boolean;
   guidanceAvailable: boolean;
   description: LocalizedString;
@@ -78,9 +83,9 @@ export interface ServiceDefinition {
   demoStatus?: string;
   guidance?: ServiceGuidance;
   officialSourceMetadata?: OfficialSourceMetadata;
-  formSchemaId?: string;
-  eligibilityRuleId?: string;
-  apiAdapter?: string;
+  formSchemaId?: string | null;
+  eligibilityRuleId?: string | null;
+  apiAdapter?: string | null;
   requiredDocuments: LocalizedString[];
   officialSource?: string;
   isDemo: boolean;

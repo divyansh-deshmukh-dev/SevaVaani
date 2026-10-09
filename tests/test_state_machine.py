@@ -128,3 +128,100 @@ def test_unsupported_service_guidance_flow():
     assert data["guidanceInfo"] is not None
     assert data["guidanceInfo"]["serviceId"] == "ration_card"
     assert "थेट ऑनलाइन अर्ज उपलब्ध नाही" in data["assistantMessage"]["mr"]
+
+def test_service_switching_apply_search_reapply_voice():
+    # 1. Create session
+    res = client.post("/api/session", json={"language": "hi"})
+    assert res.status_code == 200
+    session_id = res.json()["sessionId"]
+
+    # 2. First Apply Now interaction
+    res = client.post(f"/api/session/{session_id}/action", json={
+        "action": "APPLY_NOW",
+        "value": "pm_kisan",
+        "language": "hi"
+    })
+    assert res.status_code == 200
+    data = res.json()
+    assert data["state"] == "ASK_FIELD"
+    assert data["service"]["serviceId"] == "pm_kisan"
+    assert data["currentField"]["id"] == "full_name"
+
+    # 3. Subsequent voice-based search for another service (Aadhaar)
+    res = client.post(f"/api/session/{session_id}/turn", json={
+        "text": "आधार कार्ड",
+        "language": "hi"
+    })
+    assert res.status_code == 200
+    data = res.json()
+    assert data["state"] == "GUIDANCE"
+    assert data["service"]["serviceId"] == "aadhaar_service"
+    assert data["guidanceInfo"] is not None
+    assert data["guidanceInfo"]["serviceId"] == "aadhaar_service"
+
+    # 4. Subsequent attempt to open PM-Kisan application via voice
+    res = client.post(f"/api/session/{session_id}/turn", json={
+        "text": "मुझे पीएम किसान में आवेदन करना है",
+        "language": "hi"
+    })
+    assert res.status_code == 200
+    data = res.json()
+    assert data["state"] == "ASK_FIELD"
+    assert data["service"]["serviceId"] == "pm_kisan"
+    assert data["currentField"]["id"] == "full_name"
+
+    # 5. Verify conversation history is preserved
+    res_session = client.get(f"/api/session/{session_id}")
+    history = res_session.json()["transcriptHistory"]
+    assert len(history) >= 2
+    assert "आधार कार्ड" in history
+    assert "मुझे पीएम किसान में आवेदन करना है" in history
+
+def test_service_switching_apply_search_reapply_action():
+    res = client.post("/api/session", json={"language": "hi"})
+    session_id = res.json()["sessionId"]
+
+    # 1. First Apply Now interaction
+    client.post(f"/api/session/{session_id}/action", json={
+        "action": "APPLY_NOW",
+        "value": "pm_kisan",
+        "language": "hi"
+    })
+
+    # 2. Voice-based search for Aadhaar
+    res = client.post(f"/api/session/{session_id}/turn", json={
+        "text": "आधार कार्ड",
+        "language": "hi"
+    })
+    assert res.json()["state"] == "GUIDANCE"
+
+    # 3. Subsequent attempt to open PM-Kisan application via Action button
+    res = client.post(f"/api/session/{session_id}/action", json={
+        "action": "APPLY_NOW",
+        "value": "pm_kisan",
+        "language": "hi"
+    })
+    assert res.status_code == 200
+    data = res.json()
+    assert data["state"] == "ASK_FIELD"
+    assert data["service"]["serviceId"] == "pm_kisan"
+    assert data["currentField"]["id"] == "full_name"
+
+def test_service_switching_during_field_collection():
+    res = client.post("/api/session", json={"language": "hi"})
+    session_id = res.json()["sessionId"]
+
+    # 1. Start PM-Kisan form
+    client.post(f"/api/session/{session_id}/action", json={"action": "APPLY_NOW", "value": "pm_kisan"})
+
+    # 2. Citizen asks for Aadhaar instead of entering name
+    res = client.post(f"/api/session/{session_id}/turn", json={"text": "आधार कार्ड", "language": "hi"})
+    assert res.json()["state"] == "GUIDANCE"
+    assert res.json()["service"]["serviceId"] == "aadhaar_service"
+
+    # 3. Citizen asks to go back to PM-Kisan
+    res = client.post(f"/api/session/{session_id}/turn", json={"text": "पीएम किसान", "language": "hi"})
+    assert res.json()["state"] == "ASK_FIELD"
+    assert res.json()["service"]["serviceId"] == "pm_kisan"
+    assert res.json()["currentField"]["id"] == "full_name"
+

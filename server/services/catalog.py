@@ -57,10 +57,16 @@ class ServiceCatalog:
             # 2. Check localized names
             for lang_code in ("hi", "mr", "en"):
                 name_val = self._normalize(getattr(service.name, lang_code, ""))
+                if not name_val:
+                    continue
                 if norm_query == name_val:
                     score = max(score, 1.0)
-                elif name_val and (name_val in norm_query or norm_query in name_val):
-                    score = max(score, 0.90)
+                elif name_val in norm_query:
+                    score = max(score, 0.95)
+                elif norm_query in name_val.split():
+                    score = max(score, 0.90 if len(norm_query) >= 4 else 0.50)
+                elif len(norm_query) >= 5 and norm_query in name_val:
+                    score = max(score, 0.85)
 
             # 3. Check aliases
             for alias in service.aliases:
@@ -72,7 +78,9 @@ class ServiceCatalog:
                 elif norm_alias in norm_query:
                     # e.g. "mujhe pm kisan chahiye" contains "pm kisan"
                     score = max(score, 0.95)
-                elif norm_query in norm_alias:
+                elif norm_query in norm_alias.split():
+                    score = max(score, 0.90 if len(norm_query) >= 4 else 0.50)
+                elif len(norm_query) >= 5 and norm_query in norm_alias:
                     score = max(score, 0.85)
                 else:
                     # Token overlap

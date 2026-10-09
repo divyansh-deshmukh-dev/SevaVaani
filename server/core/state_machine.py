@@ -56,7 +56,7 @@ class StateMachine:
         # Dispatch to state handlers
         if session.state in ("WELCOME", "SERVICE_DISCOVERY"):
             response = await self._handle_discovery_state(session, req, ai_result)
-        elif session.state == "SERVICE_CONFIRM":
+        elif session.state in ("SERVICE_CONFIRM", "SERVICE_RECOMMENDATION"):
             response = await self._handle_service_confirm_state(session, req, ai_result)
         elif session.state in ("ASK_FIELD", "AWAIT_ANSWER", "FALLBACK_INPUT"):
             response = await self._handle_field_collection_state(session, req, ai_result, current_field_def)
@@ -64,10 +64,10 @@ class StateMachine:
             response = await self._handle_confirm_field_state(session, req, ai_result, current_field_def)
         elif session.state == "FINAL_REVIEW":
             response = await self._handle_final_review_state(session, req, ai_result)
-        elif session.state == "GUIDANCE":
-            response = await self._build_turn_response(session, session.lastAssistantMessage)
+        elif session.state in ("GUIDANCE", "DONE"):
+            response = await self._handle_discovery_state(session, req, ai_result)
         else:
-            response = await self._build_turn_response(session, session.lastAssistantMessage)
+            response = await self._handle_discovery_state(session, req, ai_result)
 
         # Record turn metrics
         latency_ms = int((time.time() - now) * 1000)
@@ -88,11 +88,11 @@ class StateMachine:
         action = req.action
 
         if action == "SELECT_SERVICE":
-            service_id = str(req.value or "")
+            service_id = str(req.value or session.selectedServiceId or "")
             return await self._transition_to_service(session, service_id)
 
         elif action == "APPLY_NOW":
-            service_id = session.selectedServiceId or str(req.value or "pm_kisan")
+            service_id = str(req.value or session.selectedServiceId or "pm_kisan")
             return await self._start_service_form(session, service_id)
 
         elif action == "SUBMIT_MANUAL_FIELD":
@@ -104,7 +104,7 @@ class StateMachine:
         elif action == "CONFIRM_YES":
             if session.state == "CONFIRM_FIELD":
                 return await self._confirm_current_field(session)
-            elif session.state == "SERVICE_CONFIRM":
+            elif session.state in ("SERVICE_CONFIRM", "SERVICE_RECOMMENDATION"):
                 return await self._start_service_form(session, session.selectedServiceId or "pm_kisan")
             elif session.state == "FINAL_REVIEW":
                 return await self._submit_application(session)
@@ -114,7 +114,7 @@ class StateMachine:
                 # User rejected, re-ask field
                 session.state = "ASK_FIELD"
                 return await self._build_field_prompt(session)
-            elif session.state == "SERVICE_CONFIRM":
+            elif session.state in ("SERVICE_CONFIRM", "SERVICE_RECOMMENDATION"):
                 session.state = "SERVICE_DISCOVERY"
                 msg = LocalizedString(
                     en="No problem. Which service would you like to explore?",
@@ -206,6 +206,9 @@ class StateMachine:
         else:
             # Unsupported direct service -> Transition to Guidance Mode
             session.state = "GUIDANCE"
+            session.formSession = None
+            session.fallbackLevel = 0
+            session.failureCount.clear()
             guidance = catalog.get_service_guidance(service.serviceId, session.language)
             msg = LocalizedString(
                 en=f"Direct application is not available in this prototype. Here is step-by-step guidance on eligibility, documents, and application steps for {service.name.en}.",
@@ -238,8 +241,11 @@ class StateMachine:
                 mr="मी आपल्याला इतर कोणत्या सरकारी सेवेत मदत करू शकतो?"
             )
             return await self._build_turn_response(session, msg)
+        elif ai_result.intent == "DIRECT_SERVICE":
+            service_id = ai_result.serviceId or session.selectedServiceId or "pm_kisan"
+            return await self._transition_to_service(session, service_id)
         else:
-            return await self._build_turn_response(session, session.lastAssistantMessage)
+            return await self._handle_discovery_state(session, req, ai_result)
 
     async def _handle_field_collection_state(
         self, session: SessionData, req: TurnRequest, ai_result, current_field_def: Optional[FormFieldDefinition]
@@ -255,6 +261,10 @@ class StateMachine:
             return await self._build_turn_response(session, session.lastAssistantMessage)
         elif ai_result.intent == "BACK":
             return await self._go_back_field(session)
+        elif ai_result.intent == "DIRECT_SERVICE" and ai_result.serviceId:
+            return await self._transition_to_service(session, ai_result.serviceId)
+        elif ai_result.intent == "PROBLEM_NEED":
+            return await self._handle_discovery_state(session, req, ai_result)
 
         raw_val = ai_result.normalizedValue or ai_result.extractedValue or req.text
         return await self._process_field_answer(
@@ -336,7 +346,13 @@ class StateMachine:
     async def _handle_confirm_field_state(
         self, session: SessionData, req: TurnRequest, ai_result, current_field_def: Optional[FormFieldDefinition]
     ) -> TurnResponse:
-        if ai_result.intent == "CONFIRM_YES":
+        if ai_result.intent == "DIRECT_SERVICE" and ai_result.serviceId:
+            return await self._transition_to_service(session, ai_result.serviceId)
+
+        elif ai_result.intent == "PROBLEM_NEED":
+            return await self._handle_discovery_state(session, req, ai_result)
+
+        elif ai_result.intent == "CONFIRM_YES":
             return await self._confirm_current_field(session)
 
         elif ai_result.intent in ("CONFIRM_NO", "CORRECTION"):
@@ -410,7 +426,11 @@ class StateMachine:
         return await self._build_turn_response(session, msg)
 
     async def _handle_final_review_state(self, session: SessionData, req: TurnRequest, ai_result) -> TurnResponse:
-        if ai_result.intent == "CONFIRM_YES":
+        if ai_result.intent == "DIRECT_SERVICE" and ai_result.serviceId:
+            return await self._transition_to_service(session, ai_result.serviceId)
+        elif ai_result.intent == "PROBLEM_NEED":
+            return await self._handle_discovery_state(session, req, ai_result)
+        elif ai_result.intent == "CONFIRM_YES":
             return await self._submit_application(session)
         elif ai_result.intent == "HELP":
             return await self._trigger_handoff(session, "Help requested during final review")

@@ -235,24 +235,34 @@ AI returns structured information, while application code retains full control.
 # PHASE 7 — SPEECH LAYER
 
 ## Checklist
-- [x] Hindi STT
-- [x] Marathi STT
-- [x] text transcript
-- [x] Hindi TTS
-- [x] Marathi TTS
-- [x] browser fallback
-- [x] provider abstraction
-- [x] mock speech
-- [x] microphone errors
-- [x] retry
-- [x] stop/cancel
+- [x] Hindi STT (Web Speech API + Sarvam Saaras adapter)
+- [x] Marathi STT (Web Speech API + Sarvam Saaras adapter)
+- [x] English STT (Web Speech API + Sarvam Saaras adapter)
+- [x] Live text transcript with debouncing & duplicate turn prevention
+- [x] Hindi TTS (speechSynthesis voice resolver + Sarvam Bulbul adapter)
+- [x] Marathi TTS (speechSynthesis voice resolver + Sarvam Bulbul adapter)
+- [x] English TTS (speechSynthesis voice resolver + Sarvam Bulbul adapter)
+- [x] Browser TTS voice selection (enumerates getVoices, listens to voiceschanged, strictly rejects English voices for Indic languages)
+- [x] Browser fallback and text fallback for missing voices
+- [x] Provider abstractions on client (`ISTTProvider`, `ITTSProvider`) and server (`BaseSTTProvider`, `BaseTTSProvider`)
+- [x] Server-side speech routes (`/api/speech/status`, `/api/speech/stt`, `/api/speech/stt-base64`, `/api/speech/tts`)
+- [x] Sarvam AI Saaras STT & Bulbul TTS backend adapters
+- [x] Clear error handling for missing credentials (503), auth (401), rate limits (429), timeouts (504)
+- [x] Microphone permission denial & unsupported browser localized UI notices
+- [x] All user-facing error notices translated in Hindi, Marathi, and English
+- [x] Automated unit and integration test suite (`tests/test_speech.py`)
 
 ### Acceptance test
-A user can complete the core flow without manually typing every field when supported speech services are available.
+A user can complete the core flow without manually typing every field when supported speech services are available, with graceful localized fallbacks when microphone access or voices are unavailable.
 
 ### Evidence
-- Files: `client/src/audio/speech.ts`, `client/src/App.tsx`, `client/src/i18n/hi.json`, `client/src/i18n/mr.json`
-- Tests: Web Speech API STT/TTS engine with fallback, audio speaker replay button, mic visualizer pulse animation, microphone permission error handling.
+- **Client files:** `client/src/audio/types.ts`, `client/src/audio/browserSpeech.ts`, `client/src/audio/speech.ts`, `client/src/App.tsx`, `client/src/locales/hi/index.ts`, `client/src/locales/mr/index.ts`, `client/src/locales/en/index.ts`
+- **Server files:** `server/speech/base.py`, `server/speech/sarvam.py`, `server/speech/factory.py`, `server/routes/speech.py`, `server/config.py`, `.env.example`, `tests/test_speech.py`
+- **Tests executed:** `.\server\.venv\Scripts\pytest.exe -v` (46 passed, 100%)
+- **Client build:** `npm --prefix client run build` (Passed, 0 errors)
+- **Live Status:**
+  - *Implemented & Verified:* Browser STT/TTS voice selection, duplicate prevention, localized errors, provider abstractions, server routes, error mappings.
+  - *Blocked by Missing Credentials:* Real live Sarvam AI network calls require `SARVAM_API_KEY` (documented in `.env.example`). When key is absent, backend returns 503 directing client to browser Web Speech fallback without simulating fake success.
 
 **Phase status:** [x]  
 **Completion:** 100%
@@ -369,12 +379,21 @@ Eligibility output is deterministic for the same inputs and never depends on fre
 - [x] no fake submission
 
 ### Acceptance test
-Unsupported service requests produce useful guidance without pretending to apply.
+Unsupported service requests produce useful guidance without pretending to apply. Both direct-demo services and guidance-only services render rich, defensive details with step-by-step guidance, official portals, eligibility, and required documents with zero blank screens.
 
 ### Evidence
-- Files: `server/services/catalog.py`, `server/routes/services.py`, `client/src/App.tsx`, `tests/test_services.py`
-- Commands: `.\server\.venv\Scripts\pytest.exe tests/test_services.py`
-- Tests: Ration card, pension, scholarship requests return guidance with official sources and disclaimers.
+- **Files Modified & Added:**
+  - `client/src/components/ServiceDetailView.tsx`: Defensively normalizes localized strings (`getLoc`), handles steps (`step`, `details`, `stepNumber`), formats departments cleanly as strings rather than raw objects, provides prominent in-person biometric callout for Aadhaar Card and guidance-only services.
+  - `client/src/components/ErrorBoundary.tsx`: React error boundary catching any unexpected runtime errors and presenting clean, recoverable fallback UI.
+  - `client/src/data/fallbackServices.ts`: Fully populated offline catalog for instant hydration.
+  - `client/src/App.tsx`: Synchronizes URL hash routes (`#service/:id`), supports browser Back/Forward navigation and reloads, and renders a localized "Service Not Found" screen if service is missing.
+  - `client/src/components/ServicesView.tsx`: Displays clickable official portal links and direct action buttons.
+  - `client/src/types/index.ts`: Updated `GuidanceStep` and `OfficialSourceMetadata` types to match schema.
+- **Verification Commands:**
+  - `npm --prefix client run build`: Passed (0 errors).
+  - `npm --prefix client run lint`: Passed (0 errors).
+  - `.\server\.venv\Scripts\pytest.exe`: All 46 tests passed (100%).
+  - Validation script (`test_service_data.py`): Verified all 7 catalog services across Hindi, Marathi, and English.
 
 **Phase status:** [x]  
 **Completion:** 100%
@@ -447,15 +466,25 @@ Complete summary is verified with edit capabilities and tracking status.
 - [x] Final review with per-field edit capabilities
 - [x] Submission result with application tracking
 - [x] Accessibility modal (font size, contrast, reduced motion, voice speed)
-- [x] Responsive digital public service layout
+- [x] Responsive digital public service layout with mobile-first, voice-first hierarchy
+- [x] Cinematic blurred rural landscape hero background integration (`/images/sevavaani-dark-rural-bg.png`) with balanced subtle overlay (`rgba(10, 25, 22, 0.25)`) keeping landscape clearly visible
+- [x] Removed outer white container from left hero section: main headline, saffron supporting headline, description, and badge render directly over background with crisp shadows matching Reference Image 2
+- [x] Redesigned 3 feature cards as dark translucent green cards (`rgba(9, 44, 34, 0.65)`) with emerald borders and light text floating directly over background
+- [x] Prominent Voice Assistant card floating with rich elevation shadow (`0 20px 45px -10px rgba(0,0,0,0.45)`) on the right
+- [x] Compact mobile statutory banner (`t('statutoryNoticeShort')`) with non-intrusive height
+- [x] Compact single-line mobile brand header (`[Logo] SevaVaani   [हि|म|EN] [Menu]`)
+- [x] Slide-down mobile drawer hosting profile, notifications, accessibility, 2G simulation, and navigation
+- [x] Voice Assistant Widget prioritized immediately near top of mobile screen (`hero-voice-col` first on mobile)
+- [x] Compact factual KPI badge row on mobile (`kpiVoiceFactual`, `kpiHonestFactual`) replacing promotional claims
+- [x] Overflow-x protection preventing horizontal scroll across all viewports
 
 ### Acceptance test
-A first-time user can discover services, launch direct voice-assisted demo applications, or view detailed official guidance and documents in pure Hindi, Marathi, or English.
+A citizen opening SevaVaani experiences an inspiring, trustworthy digital public service portal matching Reference Image 2: the left content sits directly over the blurred rural landscape without any large white outer box, featuring white and saffron headlines, translucent green feature cards, and the interactive Voice Assistant in a crisp white card on the right.
 
 ### Evidence
-- Files: `client/src/App.tsx`, `client/src/components/ApplicationLauncherView.tsx`, `client/src/components/ServiceDetailView.tsx`, `client/src/components/ServicesView.tsx`, `client/src/components/VoiceAssistantWidget.tsx`, `client/src/locales/`
-- Commands: `npm --prefix client run build`
-- Tests: Client builds cleanly in 880ms with 0 errors; full localization verified.
+- Files: `client/public/images/sevavaani-dark-rural-bg.png`, `client/src/App.tsx`, `client/src/components/Header.tsx`, `client/src/components/VoiceAssistantWidget.tsx`, `client/src/index.css`, `client/src/locales/`
+- Commands: `npm --prefix client run build`, `.\server\.venv\Scripts\pytest.exe tests/`
+- Tests: Client builds cleanly in 526ms; all 46 pytest tests pass (100%).
 
 **Phase status:** [x]  
 **Completion:** 100%

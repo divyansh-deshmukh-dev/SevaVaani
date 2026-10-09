@@ -66,8 +66,8 @@ class MockAIProvider(BaseAIProvider):
                 provider="mock"
             )
 
-        # 2. In Confirmation State (CONFIRM_FIELD or SERVICE_CONFIRM or FINAL_REVIEW)
-        if context_state in ("CONFIRM_FIELD", "SERVICE_CONFIRM", "FINAL_REVIEW"):
+        # 2. In Confirmation State (CONFIRM_FIELD or SERVICE_CONFIRM or FINAL_REVIEW or SERVICE_RECOMMENDATION)
+        if context_state in ("CONFIRM_FIELD", "SERVICE_CONFIRM", "FINAL_REVIEW", "SERVICE_RECOMMENDATION"):
             # Yes
             if any(y in lower_text for y in ["yes", "हाँ", "हो", "haa", "ha", "सही", "सही है", "बरोबर", "correct", "bilkul", "submit"]):
                 latency = int((time.perf_counter() - start_time) * 1000) + 15
@@ -79,8 +79,22 @@ class MockAIProvider(BaseAIProvider):
                     latencyMs=latency,
                     provider="mock"
                 )
-            # No / Correction
+            # No / Correction / Service switch from confirmation
             elif any(n in lower_text for n in ["no", "नहीं", "नाही", "galat", "गलत", "wrong", "change", "nako"]):
+                # Check if user mentioned another service while rejecting
+                matched_srv, srv_conf, _ = catalog.match_service(text, input_data.language)
+                if matched_srv and srv_conf >= 0.70:
+                    latency = int((time.perf_counter() - start_time) * 1000) + 15
+                    return UnderstandingResult(
+                        transcript=text,
+                        detectedLanguage=input_data.language,
+                        intent="DIRECT_SERVICE",
+                        serviceId=matched_srv.serviceId,
+                        confidence=srv_conf,
+                        latencyMs=latency,
+                        provider="mock"
+                    )
+
                 # Check if an inline correction is provided (e.g. "नहीं, मेरा नाम रमेश है")
                 correction_match = re.search(r"(?:नहीं|नाही|no)[,\s]+(?:मेरा नाम|number|नाम|आखरी)?\s*(.+)", text, re.IGNORECASE)
                 extracted = correction_match.group(1).strip() if correction_match else None
@@ -95,7 +109,43 @@ class MockAIProvider(BaseAIProvider):
                     provider="mock"
                 )
 
-        # 3. In Field Answer State (ASK_FIELD or AWAIT_ANSWER or FALLBACK_INPUT)
+        # 3. Explicit direct service match or problem/need from catalog
+        # Citizens can switch services or state their problem from any conversation state
+        matched_service, conf, _ = catalog.match_service(text, input_data.language)
+
+        problem_need_phrases = [
+            "financial help", "आर्थिक सहायता", "आर्थिक मदत", "पैशांची गरज",
+            "main farmer hoon", "मैं किसान हूँ", "मी शेतकरी आहे", "i am a farmer",
+            "kisan hoon", "farmer needing", "farmer need",
+            "need assistance", "financial support", "paisa chahiye", "paise ki jarurat",
+            "student needing", "student hoon", "senior citizen needing"
+        ]
+        is_problem_need = any(p in lower_text for p in problem_need_phrases)
+
+        if is_problem_need and not any(action_kw in lower_text for action_kw in ["apply", "आवेदन", "नोंदणी", "banana hai", "बनवाना है"]):
+            latency = int((time.perf_counter() - start_time) * 1000) + 20
+            return UnderstandingResult(
+                transcript=text,
+                detectedLanguage=input_data.language,
+                intent="PROBLEM_NEED",
+                confidence=0.90,
+                latencyMs=latency,
+                provider="mock"
+            )
+
+        if matched_service and conf >= 0.70:
+            latency = int((time.perf_counter() - start_time) * 1000) + 20
+            return UnderstandingResult(
+                transcript=text,
+                detectedLanguage=input_data.language,
+                intent="DIRECT_SERVICE",
+                serviceId=matched_service.serviceId,
+                confidence=conf,
+                latencyMs=latency,
+                provider="mock"
+            )
+
+        # 4. In Field Answer State (ASK_FIELD or AWAIT_ANSWER or FALLBACK_INPUT)
         if context_state in ("ASK_FIELD", "AWAIT_ANSWER", "FALLBACK_INPUT") and expecting_field:
             field_type = input_data.expectedFieldType or "text"
             extracted_val: Any = text
@@ -132,43 +182,6 @@ class MockAIProvider(BaseAIProvider):
                 intent="FIELD_ANSWER",
                 extractedValue=extracted_val,
                 normalizedValue=norm_val,
-                confidence=conf,
-                latencyMs=latency,
-                provider="mock"
-            )
-
-        # 4. Service Discovery / Problem Discovery State
-        # Check problem / need patterns first if expressing user situation/need
-        problem_need_phrases = [
-            "financial help", "आर्थिक सहायता", "आर्थिक मदत", "पैशांची गरज",
-            "main farmer hoon", "मैं किसान हूँ", "मी शेतकरी आहे", "i am a farmer",
-            "kisan hoon", "farmer needing", "farmer need",
-            "need assistance", "financial support", "paisa chahiye", "paise ki jarurat",
-            "student needing", "student hoon", "senior citizen needing"
-        ]
-        is_problem_need = any(p in lower_text for p in problem_need_phrases)
-
-        # Explicit direct service match from catalog
-        matched_service, conf, _ = catalog.match_service(text, input_data.language)
-
-        if is_problem_need and not any(action_kw in lower_text for action_kw in ["apply", "आवेदन", "नोंदणी", "banana hai", "बनवाना है"]):
-            latency = int((time.perf_counter() - start_time) * 1000) + 20
-            return UnderstandingResult(
-                transcript=text,
-                detectedLanguage=input_data.language,
-                intent="PROBLEM_NEED",
-                confidence=0.90,
-                latencyMs=latency,
-                provider="mock"
-            )
-
-        if matched_service and conf >= 0.70:
-            latency = int((time.perf_counter() - start_time) * 1000) + 20
-            return UnderstandingResult(
-                transcript=text,
-                detectedLanguage=input_data.language,
-                intent="DIRECT_SERVICE",
-                serviceId=matched_service.serviceId,
                 confidence=conf,
                 latencyMs=latency,
                 provider="mock"

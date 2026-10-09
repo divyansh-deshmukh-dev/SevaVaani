@@ -1,127 +1,90 @@
 import type { LanguageCode } from '../types';
+import { BrowserSTTAdapter, BrowserTTSAdapter } from './browserSpeech';
+import type {
+  ISTTProvider,
+  ITTSProvider,
+  SpeechRecognitionResult,
+  SpeechRecognitionError,
+  VoiceInfo,
+  TTSResult
+} from './types';
+
+export * from './types';
+export { BrowserSTTAdapter, BrowserTTSAdapter };
 
 export class SpeechService {
-  private recognition: any = null;
-  private isListening: boolean = false;
+  private sttProvider: ISTTProvider;
+  private ttsProvider: ITTSProvider;
 
-  constructor() {
-    const SpeechRecognition =
-      (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-    if (SpeechRecognition) {
-      this.recognition = new SpeechRecognition();
-      this.recognition.continuous = false;
-      this.recognition.interimResults = true;
-    }
+  constructor(
+    sttProvider?: ISTTProvider,
+    ttsProvider?: ITTSProvider
+  ) {
+    this.sttProvider = sttProvider || new BrowserSTTAdapter();
+    this.ttsProvider = ttsProvider || new BrowserTTSAdapter();
+  }
+
+  public setSTTProvider(provider: ISTTProvider) {
+    this.sttProvider = provider;
+  }
+
+  public setTTSProvider(provider: ITTSProvider) {
+    this.ttsProvider = provider;
   }
 
   public isSupported(): boolean {
-    return this.recognition !== null;
+    return this.sttProvider.isSupported();
+  }
+
+  public isRecognitionSupported(): boolean {
+    return this.sttProvider.isSupported();
+  }
+
+  public isSynthesisSupported(): boolean {
+    return this.ttsProvider.isSupported();
+  }
+
+  public hasVoiceForLanguage(lang: LanguageCode): boolean {
+    return this.ttsProvider.hasVoiceForLanguage(lang);
+  }
+
+  public async getAvailableVoices(): Promise<VoiceInfo[]> {
+    return this.ttsProvider.getAvailableVoices();
   }
 
   public startListening(
     lang: LanguageCode,
     onResult: (transcript: string, isFinal: boolean) => void,
-    onError: (error: string) => void,
+    onError: (error: SpeechRecognitionError) => void,
     onEnd: () => void
   ) {
-    if (!this.recognition) {
-      onError('Speech recognition is not supported in this browser.');
-      return;
-    }
-
-    if (this.isListening) {
-      try {
-        this.recognition.stop();
-      } catch (e) {}
-    }
-
-    const langMap: Record<LanguageCode, string> = {
-      hi: 'hi-IN',
-      mr: 'mr-IN',
-      en: 'en-IN'
-    };
-
-    this.recognition.lang = langMap[lang] || 'hi-IN';
-
-    this.recognition.onstart = () => {
-      this.isListening = true;
-    };
-
-    this.recognition.onresult = (event: any) => {
-      let interim = '';
-      let finalTranscript = '';
-
-      for (let i = event.resultIndex; i < event.results.length; ++i) {
-        if (event.results[i].isFinal) {
-          finalTranscript += event.results[i][0].transcript;
-        } else {
-          interim += event.results[i][0].transcript;
-        }
-      }
-
-      if (finalTranscript) {
-        onResult(finalTranscript.trim(), true);
-      } else if (interim) {
-        onResult(interim.trim(), false);
-      }
-    };
-
-    this.recognition.onerror = (event: any) => {
-      this.isListening = false;
-      onError(event.error || 'Speech capture failed');
-    };
-
-    this.recognition.onend = () => {
-      this.isListening = false;
-      onEnd();
-    };
-
-    try {
-      this.recognition.start();
-    } catch (err: any) {
-      this.isListening = false;
-      onError(err.message || 'Could not start microphone');
-    }
+    this.sttProvider.startListening(
+      lang,
+      (res: SpeechRecognitionResult) => {
+        onResult(res.transcript, res.isFinal);
+      },
+      (err: SpeechRecognitionError) => {
+        onError(err);
+      },
+      onEnd
+    );
   }
 
   public stopListening() {
-    if (this.recognition && this.isListening) {
-      try {
-        this.recognition.stop();
-      } catch (e) {}
-      this.isListening = false;
-    }
+    this.sttProvider.stopListening();
   }
 
-  public speak(text: string, lang: LanguageCode, onEnd?: () => void) {
-    if (!('speechSynthesis' in window) || !text) {
-      if (onEnd) onEnd();
-      return;
-    }
-
-    window.speechSynthesis.cancel();
-    const utterance = new SpeechSynthesisUtterance(text);
-    const langMap: Record<LanguageCode, string> = {
-      hi: 'hi-IN',
-      mr: 'mr-IN',
-      en: 'en-IN'
-    };
-    utterance.lang = langMap[lang] || 'hi-IN';
-    utterance.rate = 0.95; // Slightly slower for public service accessibility clarity
-    utterance.pitch = 1.0;
-
-    if (onEnd) {
-      utterance.onend = onEnd;
-      utterance.onerror = onEnd;
-    }
-
-    window.speechSynthesis.speak(utterance);
+  public async speak(
+    text: string,
+    lang: LanguageCode,
+    onEnd?: () => void,
+    onError?: (err: Error) => void
+  ): Promise<TTSResult> {
+    return this.ttsProvider.speak(text, lang, onEnd, onError);
   }
 
   public cancelSpeech() {
-    if ('speechSynthesis' in window) {
-      window.speechSynthesis.cancel();
-    }
+    this.ttsProvider.cancel();
   }
 }
 

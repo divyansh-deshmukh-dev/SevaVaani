@@ -44,6 +44,15 @@ class SessionStore:
             session.updatedAt = time.time()
         return session
 
+    def get_or_create(self, session_id: str, language: str = "hi") -> SessionData:
+        session = self._sessions.get(session_id)
+        if not session:
+            session = SessionData(sessionId=session_id, language=language)
+            self._sessions[session_id] = session
+        else:
+            session.updatedAt = time.time()
+        return session
+
     def save_session(self, session: SessionData):
         session.updatedAt = time.time()
         self._sessions[session.sessionId] = session

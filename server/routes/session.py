@@ -21,23 +21,17 @@ async def create_session(req: Optional[CreateSessionRequest] = None):
 
 @router.get("/{session_id}", response_model=SessionData)
 async def get_session(session_id: str):
-    session = session_store.get_session(session_id)
-    if not session:
-        raise HTTPException(status_code=404, detail="Session not found.")
+    session = session_store.get_or_create(session_id)
     return session
 
 @router.post("/{session_id}/turn", response_model=TurnResponse)
 async def process_turn(session_id: str, req: TurnRequest):
-    session = session_store.get_session(session_id)
-    if not session:
-        raise HTTPException(status_code=404, detail="Session not found.")
+    session = session_store.get_or_create(session_id, language=req.language or "hi")
     return await state_machine.handle_turn(session, req)
 
 @router.post("/{session_id}/action", response_model=TurnResponse)
 async def process_action(session_id: str, req: TurnRequest):
-    session = session_store.get_session(session_id)
-    if not session:
-        raise HTTPException(status_code=404, detail="Session not found.")
+    session = session_store.get_or_create(session_id, language=req.language or "hi")
     return await state_machine.handle_turn(session, req)
 
 @router.get("/{session_id}/summary")
