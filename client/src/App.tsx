@@ -538,14 +538,7 @@ export function App() {
               }}
             >
               <div className="gov-container-wide">
-                <div
-                  style={{
-                    display: 'grid',
-                    gridTemplateColumns: '1.15fr 1fr',
-                    gap: '40px',
-                    alignItems: 'center'
-                  }}
-                >
+                <div className="hero-grid">
                   {/* Left Column: Hero Headlines & Value Props */}
                   <div>
                     {/* Badge */}
@@ -569,45 +562,20 @@ export function App() {
                     </div>
 
                     {/* Dual-script title */}
-                    <h2
-                      style={{
-                        fontSize: '38px',
-                        fontWeight: 800,
-                        color: '#0d4436',
-                        lineHeight: 1.15,
-                        letterSpacing: '-0.5px',
-                        marginBottom: '12px'
-                      }}
-                    >
+                    <h2 className="hero-title">
                       {t('heroTitle', 'सशक्त नागरिक, पारदर्शी भारत।')}
                     </h2>
 
-                    <h3
-                      style={{
-                        fontSize: '20px',
-                        fontWeight: 600,
-                        color: '#c2410c',
-                        lineHeight: 1.35,
-                        marginBottom: '16px'
-                      }}
-                    >
+                    <h3 className="hero-subtitle">
                       {t('heroSubtitle', 'आपकी अपनी आवाज़ में, सरल और सुगम सरकारी सेवाएं।')}
                     </h3>
 
-                    <p
-                      style={{
-                        fontSize: '15.5px',
-                        color: '#475569',
-                        lineHeight: 1.6,
-                        marginBottom: '28px',
-                        maxWidth: '560px'
-                      }}
-                    >
+                    <p className="hero-desc">
                       {t('heroDesc')}
                     </p>
 
                     {/* 3 KPI Feature Stat Cards */}
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px' }}>
+                    <div className="kpi-grid">
                       <div
                         style={{
                           backgroundColor: '#ecfdf5',
@@ -697,7 +665,7 @@ export function App() {
                   {t('quickActionsTitle', 'आप क्या करना चाहते हैं?')}
                 </h3>
 
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))', gap: '14px' }}>
+                <div className="quick-actions-grid">
                   {[
                     {
                       title: t('qaSearchTitle', 'सेवा खोजें'),
@@ -791,7 +759,7 @@ export function App() {
             {/* KEY WELFARE SCHEMES DIRECTORY (SUMMARY PREVIEW) */}
             <section style={{ padding: '36px 0', backgroundColor: '#ffffff', borderTop: '1px solid var(--border-light)' }}>
               <div className="gov-container-wide">
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '10px' }}>
                   <div>
                     <h3 style={{ fontSize: '22px', fontWeight: 800, color: '#0d4436' }}>
                       {t('popularServicesTitle', 'लोकप्रिय सरकारी सेवाएं')}
@@ -809,7 +777,7 @@ export function App() {
                   </button>
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '18px' }}>
+                <div className="popular-services-grid">
                   {services.slice(0, 3).map((service) => {
                     const isDirect = service.applicationMode === 'direct-demo' || service.directApplicationSupported === true;
                     const serviceName = service.name[language] || service.name.hi;
@@ -883,7 +851,7 @@ export function App() {
                   </p>
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '20px' }}>
+                <div className="how-it-works-grid">
                   {[
                     {
                       step: '01',
@@ -951,7 +919,7 @@ export function App() {
                   </p>
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '20px' }}>
+                <div className="trust-grid">
                   {[
                     {
                       title: t('trust1Title', 'सुरक्षित एवं मास्क की गई जानकारी'),

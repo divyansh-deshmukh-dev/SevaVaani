@@ -363,21 +363,23 @@ export function Header({
               </span>
             </button>
 
-            {/* Mobile menu toggle */}
+            {/* Mobile menu toggle button */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               style={{
-                display: 'none',
                 alignItems: 'center',
                 justifyContent: 'center',
-                backgroundColor: '#f1f5f9',
-                border: 'none',
+                backgroundColor: mobileMenuOpen ? '#0d4436' : '#f1f5f9',
+                color: mobileMenuOpen ? '#ffffff' : '#0d4436',
+                border: '1px solid #cbd5e1',
                 width: '38px',
                 height: '38px',
                 borderRadius: '8px',
-                cursor: 'pointer'
+                cursor: 'pointer',
+                transition: 'all 0.15s'
               }}
               className="mobile-nav-toggle"
+              aria-label="Toggle mobile menu"
             >
               {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
             </button>
@@ -385,7 +387,88 @@ export function Header({
         </div>
       </div>
 
-      {/* 3. DEEP INSTITUTIONAL NAVIGATION BAR */}
+      {/* 3. MOBILE SLIDE-DOWN DRAWER MENU (Visible when hamburger is toggled) */}
+      {mobileMenuOpen && (
+        <div
+          style={{
+            backgroundColor: '#ffffff',
+            borderBottom: '3px solid #0d4436',
+            boxShadow: 'var(--shadow-lg)',
+            padding: '16px 20px',
+            animation: 'subtle-fade-in 0.2s ease-out'
+          }}
+        >
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginBottom: '14px' }}>
+            {navItems.map((item) => {
+              const Icon = item.icon;
+              const active = activeTab === item.id;
+              return (
+                <button
+                  key={item.id}
+                  onClick={() => {
+                    onTabChange(item.id);
+                    setMobileMenuOpen(false);
+                  }}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '12px',
+                    padding: '11px 14px',
+                    borderRadius: '8px',
+                    backgroundColor: active ? '#ecfdf5' : 'transparent',
+                    color: active ? '#0d4436' : '#334155',
+                    border: active ? '1.5px solid #a7f3d0' : '1px solid transparent',
+                    fontWeight: active ? 700 : 500,
+                    fontSize: '14px',
+                    textAlign: 'left',
+                    cursor: 'pointer',
+                    width: '100%'
+                  }}
+                >
+                  <Icon size={18} color={active ? '#059669' : '#64748b'} />
+                  <span>{item.label}</span>
+                </button>
+              );
+            })}
+          </div>
+
+          <div
+            style={{
+              paddingTop: '12px',
+              borderTop: '1px solid #e2e8f0',
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              flexWrap: 'wrap',
+              gap: '10px'
+            }}
+          >
+            <div style={{ fontSize: '12px', color: '#64748b' }}>
+              📞 टोल-फ्री: <strong>1800-000-DEMO</strong>
+            </div>
+            <button
+              onClick={() => {
+                onToggle2G();
+                setMobileMenuOpen(false);
+              }}
+              style={{
+                background: simulate2G ? '#ea580c' : '#165b49',
+                color: '#ffffff',
+                border: 'none',
+                padding: '4px 10px',
+                borderRadius: '12px',
+                fontSize: '11.5px',
+                fontWeight: 600,
+                cursor: 'pointer'
+              }}
+            >
+              2G Edge: {simulate2G ? '800ms' : 'OFF'}
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* 4. DEEP INSTITUTIONAL NAVIGATION BAR (Scrollable on tablet/mobile) */}
       <nav
         style={{
           backgroundColor: '#0d4436',
@@ -399,7 +482,8 @@ export function Header({
             gap: '2px',
             overflowX: 'auto',
             padding: '2px 0',
-            scrollbarWidth: 'none'
+            scrollbarWidth: 'none',
+            WebkitOverflowScrolling: 'touch'
           }}
         >
           {navItems.map((item) => {

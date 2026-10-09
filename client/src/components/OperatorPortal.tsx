@@ -1063,7 +1063,7 @@ export function OperatorPortal({
                     </div>
 
                     {/* Official Decision Buttons */}
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '10px' }}>
                       <button
                         onClick={() => handleApplyStatusChange('APPROVED (DEMO)')}
                         className="btn-gov-primary"
@@ -1218,7 +1218,7 @@ export function OperatorPortal({
                 </h3>
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '16px', marginBottom: '16px' }}>
                 <div>
                   <label style={{ fontSize: '13px', fontWeight: 600, color: '#334155', display: 'block', marginBottom: '6px' }}>
                     आधिकारिक संदर्भ पाठ (Ground Truth / Reference):
