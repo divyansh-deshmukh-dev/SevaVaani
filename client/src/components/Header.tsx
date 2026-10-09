@@ -56,9 +56,6 @@ export function Header({
     { id: 'applications', label: t('navApplications', 'My Applications'), icon: FileText },
     { id: 'docs', label: t('navDocs', 'Documents'), icon: FileText },
     { id: 'help', label: t('navHelp', 'Help & Support'), icon: HelpCircle },
-    ...(user.role === 'operator'
-      ? [{ id: 'operator', label: t('navOperator', 'Operator Portal'), icon: PhoneCall }]
-      : []),
     { id: 'eval', label: t('navMetrics', 'Metrics & Lab'), icon: Activity },
     { id: 'about', label: t('navAbout', 'About Project'), icon: Info }
   ];

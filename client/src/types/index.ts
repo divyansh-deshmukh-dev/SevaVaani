@@ -164,12 +164,14 @@ export interface ApplicationRecord {
   serviceId: string;
   serviceName: string;
   date: string;
-  status: 'SUBMITTED (DEMO)' | 'IN_PROGRESS' | 'UNDER_REVIEW (DEMO)' | 'APPROVED (DEMO)';
+  status: 'SUBMITTED (DEMO)' | 'IN_PROGRESS' | 'UNDER_REVIEW (DEMO)' | 'APPROVED (DEMO)' | 'REJECTED (DEMO)' | string;
   step: number;
   totalSteps: number;
   isDemo: boolean;
   formData: Record<string, unknown>;
   lastUpdated: string;
+  officerRemarks?: string;
+  reviewer?: string;
 }
 
 export interface NotificationItem {

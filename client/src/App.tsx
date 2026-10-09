@@ -37,6 +37,7 @@ import { TrackStatusView } from './components/TrackStatusView';
 import { DocumentsView } from './components/DocumentsView';
 import { HelpView } from './components/HelpView';
 import { OperatorView } from './components/OperatorView';
+import { OperatorPortal } from './components/OperatorPortal';
 import { EvalLabView } from './components/EvalLabView';
 import { AboutView } from './components/AboutView';
 import { Footer } from './components/Footer';
@@ -415,7 +416,69 @@ export function App() {
     }
   };
 
+  const handleUpdateApplicationStatus = (appId: string, newStatus: string, remarks?: string) => {
+    setApplications((prev) =>
+      prev.map((app) =>
+        app.applicationId === appId
+          ? {
+              ...app,
+              status: newStatus as any,
+              officerRemarks: remarks,
+              reviewer: user.name,
+              lastUpdated: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+            }
+          : app
+      )
+    );
+  };
+
   const unreadCount = notifications.filter((n) => !n.read).length;
+
+  // Dedicated Operator Portal Return for authenticated operators
+  if (user.role === 'operator' && user.isAuthenticated) {
+    return (
+      <OperatorPortal
+        user={user}
+        language={language}
+        onLanguageChange={handleLanguageChange}
+        applications={applications}
+        onUpdateApplicationStatus={handleUpdateApplicationStatus}
+        handoffRecord={handoffRecord}
+        services={services}
+        onSwitchToCitizen={() => {
+          setUser({
+            name: 'Ramesh Kumar',
+            mobile: '9876543210',
+            maskedAadhaar: 'XXXX-XXXX-1100',
+            state: 'Uttar Pradesh',
+            district: 'Varanasi',
+            village: 'Shivpur',
+            isGuest: false,
+            isAuthenticated: true,
+            role: 'citizen'
+          });
+          setActiveTab('assistant');
+        }}
+        onSignOut={() => {
+          setUser({
+            name: 'Guest Citizen',
+            mobile: '',
+            maskedAadhaar: '',
+            state: '',
+            district: '',
+            village: '',
+            isGuest: true,
+            isAuthenticated: false,
+            role: 'citizen'
+          });
+          setActiveTab('assistant');
+        }}
+        simulate2G={simulate2G}
+        onToggle2G={toggle2G}
+        t={t}
+      />
+    );
+  }
 
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>

@@ -814,6 +814,26 @@ The project can be declared complete only when all of the following are true:
   - `npm --prefix client run build`: PASS (0 errors, Vite production build verified in 727ms)
   - `.\server\.venv\Scripts\pytest.exe tests/`: PASS (36 of 36 tests passing)
 
+## Entry 4 — Completely Separated Operator Portal Architecture
+**Status:** Dedicated Operator Portal layout and separation completed and verified.  
+**Date:** 2026-10-09  
+**Deliverables:**
+- **Full Architectural Separation of Portals:**
+  - When an operator is authenticated (`user.role === 'operator'`), the application conditionally mounts a completely dedicated **Operator Portal (`OperatorPortal.tsx`)**, replacing all citizen views, citizen navigation, and citizen hero elements.
+  - Citizen-specific features ("My Applications", "Citizen Assistant", "Apply Online", "Documents") are completely absent from the Operator Portal.
+- **Dedicated Operator Console Experience (`OperatorPortal.tsx`):**
+  - *Top Dispatch Bar:* Internal administrative badge, shift & CSC station metadata, Duty status toggle (On Duty / On Break), 2G network simulation toggle.
+  - *Operator Header Bar:* Level-3 Helpdesk emblem, Operator ID & department pill, multilingual selector, "Switch to Citizen Portal" action, and "Sign Out" button.
+  - *Operator Navigation Tabs:*
+    1. **Live Escalations Queue (लाइव सहायता कतार):** Real-time ticket queue, language filter (HI, MR, EN), citizen data snapshot, active call simulator with SOP phone scripts in regional languages, resolution notes, and "Mark as Resolved" action.
+    2. **Applications Review & Audit Desk (आवेदन समीक्षा एवं ऑडिट):** Master department queue of citizen submissions, search by ID/Name/Mobile, filter tabs (All, Under Review, Approved, Rejected), detailed audit modal with form entries, officer remarks input, and 1-click status actions (Approve, Reject, Request Docs).
+    3. **Service SOPs & Guidelines (मानक संचालन प्रक्रिया):** Comprehensive operational guidelines for schemes, mandatory documents checklist, caller guidance scripts, and official departmental portal links.
+    4. **System Telemetry & WER Lab (टेलीमेट्री व मेट्रिक्स):** Real-time platform KPI cards (active sessions, ASR confidence, handoff rate) and interactive Word Error Rate (WER) testing lab.
+  - *Operator Administrative Footer:* Node IP metadata, session compliance notice, and return action.
+- **Verification:**
+  - `npm --prefix client run build`: PASS (0 errors, Vite production bundle built in 624ms)
+  - `.\server\.venv\Scripts\pytest.exe tests/`: PASS (36 of 36 tests passing)
+
 ---
 
 # AI BUILDER INSTRUCTION
