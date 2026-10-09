@@ -106,18 +106,24 @@ class ServiceCatalog:
         if not service:
             return None
 
-        # Build guidance package
-        guidance = {
-            "serviceId": service.serviceId,
-            "title": getattr(service.name, language, service.name.en),
-            "description": getattr(service.description, language, service.description.en),
-            "directApplicationSupported": service.directApplicationSupported,
-            "officialSource": service.officialSource,
-            "requiredDocuments": [
-                getattr(doc, language, doc.en)
-                for doc in service.requiredDocuments
-            ],
-            "applicationSteps": [
+        # Extract structured guidance if configured
+        raw_guidance = service.guidance or {}
+        
+        # Steps formatting
+        steps = []
+        if raw_guidance.get("steps"):
+            for st in raw_guidance["steps"]:
+                t_obj = st.get("title", {})
+                d_obj = st.get("details", {})
+                title = t_obj.get(language) or t_obj.get("en") or str(t_obj)
+                details = d_obj.get(language) or d_obj.get("en") or str(d_obj)
+                steps.append({
+                    "step": st.get("step", len(steps) + 1),
+                    "title": title,
+                    "details": details
+                })
+        else:
+            steps = [
                 {
                     "step": 1,
                     "title": "Document Verification" if language == "en" else ("दस्तावेज़ तैयारी" if language == "hi" else "कागदपत्रे तयार करणे"),
@@ -133,12 +139,60 @@ class ServiceCatalog:
                     "title": "Application Submission & Receipt" if language == "en" else ("आवेदन जमा करना और पावती" if language == "hi" else "अर्ज सादर करणे व पोच पावती"),
                     "details": "Submit the verified form and retain your application tracking acknowledgment." if language == "en" else ("सत्यापित फॉर्म जमा करें और अपनी ट्रैकिंग पावती सुरक्षित रखें।" if language == "hi" else "सत्यापित अर्ज जमा करा आणि ट्रॅकिंग पोच पावती सुरक्षित ठेवा.")
                 }
+            ]
+
+        # Criteria formatting
+        criteria = []
+        if raw_guidance.get("eligibilityCriteria"):
+            for c in raw_guidance["eligibilityCriteria"]:
+                criteria.append(c.get(language) or c.get("en") or str(c))
+
+        # FAQs formatting
+        faqs = []
+        if raw_guidance.get("faqs"):
+            for f in raw_guidance["faqs"]:
+                q_obj = f.get("question", {})
+                a_obj = f.get("answer", {})
+                faqs.append({
+                    "question": q_obj.get(language) or q_obj.get("en") or str(q_obj),
+                    "answer": a_obj.get(language) or a_obj.get("en") or str(a_obj)
+                })
+
+        # Who is it for
+        who_obj = raw_guidance.get("whoIsItFor") or {}
+        who_for = who_obj.get(language) or who_obj.get("en") or ("Indian citizens meeting eligibility guidelines." if language == "en" else "पात्रता दिशानिर्देशों को पूरा करने वाले भारतीय नागरिक।")
+
+        # Disclaimer
+        disc_obj = raw_guidance.get("disclaimer") or {}
+        disclaimer = disc_obj.get(language) or disc_obj.get("en") or (
+            "Direct application is not available in this prototype. Guidance provided reflects verified public service standards." if language == "en" else
+            "इस प्रोटोटाइप में सीधा ऑनलाइन आवेदन उपलब्ध नहीं है। यहाँ प्रमाणित सार्वजनिक सेवा मानकों का मार्गदर्शन दिया गया है।"
+        )
+
+        return {
+            "serviceId": service.serviceId,
+            "id": service.serviceId,
+            "name": getattr(service.name, language, service.name.en),
+            "title": getattr(service.name, language, service.name.en),
+            "category": service.category,
+            "serviceType": service.serviceType,
+            "applicationMode": service.applicationMode,
+            "directApplicationSupported": service.directApplicationSupported,
+            "guidanceAvailable": service.guidanceAvailable,
+            "description": getattr(service.description, language, service.description.en),
+            "whoIsItFor": who_for,
+            "eligibilityCriteria": criteria,
+            "requiredDocuments": [
+                getattr(doc, language, doc.en)
+                for doc in service.requiredDocuments
             ],
-            "disclaimer": "This prototype provides information and guidance only. Real applications must be submitted through the official government portal or authorized service centers." if language == "en" else (
-                "यह प्रोटोटाइप केवल सूचना और मार्गदर्शन प्रदान करता है। वास्तविक आवेदन आधिकारिक सरकारी पोर्टल या अधिकृत सेवा केंद्रों के माध्यम से ही जमा किए जाने चाहिए।" if language == "hi" else
-                "हा प्रोटोटाइप केवळ माहिती आणि मार्गदर्शन प्रदान करतो. प्रत्यक्ष अर्ज अधिकृत सरकारी पोर्टल किंवा सेवा केंद्रांद्वारेच सादर करावेत."
-            )
+            "applicationSteps": steps,
+            "faqs": faqs,
+            "officialSource": service.officialSource,
+            "officialSourceMetadata": service.officialSourceMetadata,
+            "isDemo": service.isDemo,
+            "demoStatus": service.demoStatus or ("Direct application is not available in this prototype." if not service.directApplicationSupported else "Direct voice demo application active"),
+            "disclaimer": disclaimer
         }
-        return guidance
 
 catalog = ServiceCatalog()

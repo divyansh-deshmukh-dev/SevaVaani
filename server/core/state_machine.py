@@ -155,21 +155,29 @@ class StateMachine:
 
         if intent == "DIRECT_SERVICE":
             matched_service, conf, candidates = catalog.match_service(req.text or "", session.language)
-            service_id = ai_result.serviceId or (matched_service.serviceId if matched_service else "pm_kisan")
-            return await self._transition_to_service(session, service_id)
+            service_id = ai_result.serviceId or (matched_service.serviceId if matched_service else None)
+            if service_id:
+                return await self._transition_to_service(session, service_id)
+            else:
+                msg = LocalizedString(
+                    en="Please specify the government service or welfare scheme you need (for example: 'Aadhaar Card', 'PM-Kisan', or 'Ration Card').",
+                    hi="कृपया आपको जिस सरकारी सेवा या कल्याणकारी योजना की आवश्यकता है उसका नाम बताएं (जैसे: 'आधार कार्ड', 'पीएम-किसान', या 'राशन कार्ड')।",
+                    mr="कृपया आपल्याला हव्या असलेल्या सरकारी सेवेचे किंवा योजनेचे नाव सांगा (उदा. 'आधार कार्ड', 'पीएम-किसान', किंवा 'रेशन कार्ड')."
+                )
+                session.state = "SERVICE_DISCOVERY"
+                return await self._build_turn_response(session, msg)
 
         elif intent == "PROBLEM_NEED":
             # Transition to recommendation / need discovery
-            # For farmer need, recommend PM-Kisan; for other needs, recommend appropriate scheme
             matched_service, conf, candidates = catalog.match_service(req.text or "", session.language)
             session.state = "SERVICE_RECOMMENDATION"
             rec_service = matched_service or catalog.get_service("pm_kisan")
             session.selectedServiceId = rec_service.serviceId if rec_service else "pm_kisan"
 
             msg = LocalizedString(
-                en=f"Based on your need, I recommend {rec_service.name.en}. Would you like to proceed?",
-                hi=f"आपकी आवश्यकता के अनुसार, मैं {rec_service.name.hi} की सिफ़ारिश करता हूँ। क्या आप इसके लिए आवेदन करना चाहते हैं?",
-                mr=f"तुमच्या गरजेनुसार, मी {rec_service.name.mr} ची शिफारस करतो. आपण अर्ज करू इच्छिता का?"
+                en=f"Based on your requirement, I recommend {rec_service.name.en}. Would you like to proceed?",
+                hi=f"आपकी आवश्यकता के अनुसार, मैं {rec_service.name.hi} की सिफ़ारिश करता हूँ। क्या आप इसके लिए आगे बढ़ना चाहते हैं?",
+                mr=f"तुमच्या गरजेनुसार, मी {rec_service.name.mr} ची शिफारस करतो. आपण पुढे जाऊ इच्छिता का?"
             )
             return await self._build_turn_response(session, msg)
 
@@ -178,9 +186,9 @@ class StateMachine:
                 return await self._build_turn_response(session, session.lastAssistantMessage)
             # Unclear query
             msg = LocalizedString(
-                en="Please name the government scheme you need, or tell me your problem (e.g. 'I need PM-Kisan' or 'I am a farmer needing assistance').",
-                hi="कृपया जिस योजना की आवश्यकता है उसका नाम बताएं, या अपनी समस्या बताएं (जैसे: 'मुझे पीएम-किसान चाहिए' या 'मैं किसान हूँ मुझे मदद चाहिए')।",
-                mr="कृपया तुम्हाला हव्या असलेल्या योजनेचे नाव सांगा किंवा तुमची समस्या सांगा (उदा. 'मला पीएम-किसान हवे आहे' किंवा 'मी शेतकरी आहे मला मदतीची गरज आहे')."
+                en="Please name the public service or scheme you need, or describe your situation (e.g. 'I need Aadhaar card', 'PM-Kisan apply', or 'I am a farmer needing assistance').",
+                hi="कृपया जिस जनसेवा या योजना की आवश्यकता है उसका नाम बताएं, या अपनी स्थिति बताएं (जैसे: 'मुझे आधार कार्ड चाहिए', 'पीएम-किसान आवेदन', या 'मैं किसान हूँ मुझे मदद चाहिए')।",
+                mr="कृपया आपल्याला आवश्यक असलेल्या जनसेवेचे किंवा योजनेचे नाव सांगा, किंवा आपली स्थिती सांगा (उदा. 'मला आधार कार्ड हवे आहे', 'पीएम-किसान अर्ज', किंवा 'मी शेतकरी आहे मला मदतीची गरज आहे')."
             )
             session.state = "SERVICE_DISCOVERY"
             return await self._build_turn_response(session, msg)
@@ -200,9 +208,9 @@ class StateMachine:
             session.state = "GUIDANCE"
             guidance = catalog.get_service_guidance(service.serviceId, session.language)
             msg = LocalizedString(
-                en=f"Direct digital submission for {service.name.en} is not available in this demo. Here is step-by-step guidance on how and where to apply.",
-                hi=f"{service.name.hi} के लिए इस डेमो में सीधा ऑनलाइन आवेदन उपलब्ध नहीं है। यहाँ आवेदन करने के चरण और आवश्यक दस्तावेज़ दिए गए हैं।",
-                mr=f"{service.name.mr} साठी या डेमोमध्ये थेट ऑनलाइन अर्ज उपलब्ध नाही. येथे अर्ज कसा आणि कोठे करावा याबद्दल मार्गदर्शन दिले आहे."
+                en=f"Direct application is not available in this prototype. Here is step-by-step guidance on eligibility, documents, and application steps for {service.name.en}.",
+                hi=f"इस प्रोटोटाइप में सीधा ऑनलाइन आवेदन उपलब्ध नहीं है। यहाँ {service.name.hi} के लिए पात्रता, दस्तावेज़ और आवेदन प्रक्रिया का संपूर्ण मार्गदर्शन दिया गया है।",
+                mr=f"या प्रोटोटाइपमध्ये थेट ऑनलाइन अर्ज उपलब्ध नाही. येथे {service.name.mr} साठी पात्रता, कागदपत्रे आणि अर्ज प्रक्रियेचे संपूर्ण मार्गदर्शन दिले आहे."
             )
             return await self._build_turn_response(session, msg, guidance_info=guidance)
 

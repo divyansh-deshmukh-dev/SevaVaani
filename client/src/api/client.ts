@@ -65,6 +65,42 @@ export class ApiClient {
     return res.json();
   }
 
+  public async getService(serviceId: string) {
+    await this.delayIfSimulated();
+    const res = await fetch(`${API_BASE}/api/services/${serviceId}`);
+    if (!res.ok) throw new Error(`Failed to load service '${serviceId}'`);
+    return res.json();
+  }
+
+  public async searchServices(query: string, language: LanguageCode = 'hi') {
+    await this.delayIfSimulated();
+    const res = await fetch(`${API_BASE}/api/services/search?q=${encodeURIComponent(query)}&language=${language}`);
+    if (!res.ok) throw new Error('Failed to search services');
+    return res.json();
+  }
+
+  public async getServiceGuidance(serviceId: string, language: LanguageCode = 'hi') {
+    await this.delayIfSimulated();
+    const res = await fetch(`${API_BASE}/api/services/${serviceId}/guidance?language=${language}`);
+    if (!res.ok) throw new Error(`Failed to load guidance for service '${serviceId}'`);
+    return res.json();
+  }
+
+  public async getServiceForm(serviceId: string) {
+    await this.delayIfSimulated();
+    const res = await fetch(`${API_BASE}/api/services/${serviceId}/form`);
+    if (!res.ok) throw new Error(`Failed to load form for service '${serviceId}'`);
+    return res.json();
+  }
+
+  public async getServiceEligibility(serviceId: string) {
+    await this.delayIfSimulated();
+    const res = await fetch(`${API_BASE}/api/services/${serviceId}/eligibility`);
+    if (!res.ok) throw new Error(`Failed to load eligibility for service '${serviceId}'`);
+    return res.json();
+  }
+
+
   public async getMetrics() {
     const res = await fetch(`${API_BASE}/api/metrics`);
     if (!res.ok) throw new Error('Failed to load metrics');

@@ -21,12 +21,15 @@ export function ServicesView({
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
 
   const categories = [
-    { id: 'all', label: language === 'hi' ? 'सभी सेवाएं' : (language === 'mr' ? 'सर्व सेवा' : 'All Schemes') },
-    { id: 'agriculture', label: language === 'hi' ? 'कृषि एवं किसान' : (language === 'mr' ? 'शेती व शेतकरी' : 'Agriculture') },
-    { id: 'food_security', label: language === 'hi' ? 'खाद्य सुरक्षा' : (language === 'mr' ? 'अन्न सुरक्षा' : 'Food Security') },
-    { id: 'social_welfare', label: language === 'hi' ? 'सामाजिक सुरक्षा' : (language === 'mr' ? 'सामाजिक सुरक्षा' : 'Social Welfare') },
-    { id: 'education', label: language === 'hi' ? 'शिक्षा एवं छात्रवृत्ति' : (language === 'mr' ? 'शिक्षण व शिष्यवृत्ती' : 'Education') },
-    { id: 'housing', label: language === 'hi' ? 'आवास योजना' : (language === 'mr' ? 'घरकुल योजना' : 'Housing') }
+    { id: 'all', label: t('catAll', 'सभी सेवाएं') },
+    { id: 'agriculture', label: t('catAgriculture', 'कृषि एवं किसान') },
+    { id: 'identity_documents', label: t('catIdentity', 'पहचान एवं दस्तावेज़') },
+    { id: 'food_security', label: t('catFoodSecurity', 'खाद्य सुरक्षा व राशन') },
+    { id: 'social_welfare', label: t('catSocialWelfare', 'सामाजिक सुरक्षा व पेंशन') },
+    { id: 'education', label: t('catEducation', 'शिक्षा एवं छात्रवृत्ति') },
+    { id: 'housing', label: t('catHousing', 'आवास योजना') },
+    { id: 'health', label: t('catHealth', 'स्वास्थ्य एवं चिकित्सा') },
+    { id: 'certificates', label: t('catCertificate', 'प्रमाण पत्र सेवाएं') }
   ];
 
   const filtered = services.filter((s) => {
@@ -39,7 +42,7 @@ export function ServicesView({
   });
 
   return (
-    <div className="gov-container" style={{ padding: '24px 0' }}>
+    <div className="gov-container" style={{ padding: '24px 0 48px' }}>
       {/* Header Banner */}
       <div
         style={{
@@ -66,13 +69,13 @@ export function ServicesView({
           }}
         >
           <ShieldCheck size={14} color="#f59e0b" />
-          PUBLIC WELFARE CATALOG • नागरिक योजनाएं
+          {t('popularServicesTitle', 'सरकारी सेवाओं की निर्देशिका')}
         </span>
         <h2 style={{ fontSize: '26px', fontWeight: 800, marginBottom: '8px' }}>
           {t('popularServicesTitle', 'सरकारी सेवाओं की निर्देशिका')}
         </h2>
         <p style={{ fontSize: '14.5px', color: '#d1fae5', maxWidth: '720px', lineHeight: 1.5 }}>
-          {t('popularServicesSub', 'उपलब्ध जन कल्याणकारी योजनाएं एवं ऑनलाइन डेमो सुविधाएं। किसी भी सेवा के लिए आवाज़ से पूछताछ या आवेदन करें।')}
+          {t('popularServicesSub', 'उपलब्ध जन कल्याणकारी योजनाएं, पहचान सेवाएं एवं ऑनलाइन डेमो सुविधाएं।')}
         </p>
       </div>
 
@@ -83,7 +86,7 @@ export function ServicesView({
           <Search size={18} color="#64748b" style={{ position: 'absolute', left: '16px', top: '15px' }} />
           <input
             type="text"
-            placeholder={language === 'hi' ? 'योजना का नाम खोजें (उदा. किसान, पेंशन, राशन, छात्रवृत्ति)...' : (language === 'mr' ? 'योजनेचे नाव शोधा (उदा. शेतकरी, पेन्शन, रेशन)...' : 'Search scheme name or keywords...')}
+            placeholder={t('searchServicesPlaceholder', 'सेवा का नाम या विषय खोजें (उदा. आधार, किसान, राशन, पेंशन)...')}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             style={{
@@ -126,7 +129,10 @@ export function ServicesView({
       {/* Services Grid */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))', gap: '20px' }}>
         {filtered.map((service) => {
-          const isDirect = service.directApplicationSupported;
+          const isDirect = service.applicationMode === 'direct-demo' || service.directApplicationSupported === true;
+          const serviceName = service.name[language] || service.name.hi;
+          const serviceDesc = service.description[language] || service.description.hi;
+
           return (
             <div
               key={service.serviceId}
@@ -146,26 +152,38 @@ export function ServicesView({
                 {/* Header tags */}
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
                   <span className={`badge-gov ${isDirect ? 'badge-gov-green' : 'badge-gov-blue'}`}>
-                    {isDirect ? '✓ ऑनलाइन डेमो आवेदन उपलब्ध' : 'मार्गदर्शन उपलब्ध'}
+                    {isDirect ? `✓ ${t('onlineDemoAvailable', 'ऑनलाइन डेमो आवेदन उपलब्ध')}` : t('guidanceAvailable', 'मार्गदर्शन उपलब्ध')}
                   </span>
-                  <span className="badge-gov badge-gov-proto">Demo</span>
+                  <span className="badge-gov badge-gov-proto">
+                    {t('prototypeBadge', 'डेमो')}
+                  </span>
                 </div>
 
-                {/* Scheme Title */}
-                <h3 style={{ fontSize: '18px', fontWeight: 700, color: '#0d4436', marginBottom: '8px', lineHeight: 1.3 }}>
-                  {service.name[language] || service.name.hi}
+                {/* Service Title */}
+                <h3
+                  onClick={() => onSelectService(service)}
+                  style={{
+                    fontSize: '18px',
+                    fontWeight: 700,
+                    color: '#0d4436',
+                    marginBottom: '8px',
+                    lineHeight: 1.3,
+                    cursor: 'pointer'
+                  }}
+                >
+                  {serviceName}
                 </h3>
 
                 {/* Description */}
                 <p style={{ fontSize: '13.5px', color: '#475569', lineHeight: 1.5, marginBottom: '16px' }}>
-                  {service.description[language] || service.description.hi}
+                  {serviceDesc}
                 </p>
 
                 {/* Documents requirement badge */}
                 <div style={{ backgroundColor: '#f8fafc', padding: '10px 12px', borderRadius: '8px', border: '1px solid #e2e8f0', marginBottom: '16px' }}>
                   <div style={{ fontSize: '12px', fontWeight: 700, color: '#334155', marginBottom: '4px', display: 'flex', alignItems: 'center', gap: '4px' }}>
                     <FileText size={13} color="#0d4436" />
-                    आवश्यक दस्तावेज़:
+                    {t('requiredDocuments', 'आवश्यक दस्तावेज़')}:
                   </div>
                   <div style={{ fontSize: '12px', color: '#64748b' }}>
                     {service.requiredDocuments?.map((d) => d[language] || d.hi).slice(0, 2).join(' • ')}
@@ -178,29 +196,38 @@ export function ServicesView({
               <div>
                 <div style={{ display: 'flex', gap: '10px' }}>
                   {isDirect ? (
-                    <button
-                      onClick={() => onApplyService(service.serviceId)}
-                      className="btn-gov-primary"
-                      style={{ flex: 1 }}
-                    >
-                      <ChevronRight size={16} />
-                      {t('applyNow', 'आवेदन करें')}
-                    </button>
+                    <>
+                      <button
+                        onClick={() => onApplyService(service.serviceId)}
+                        className="btn-gov-primary"
+                        style={{ flex: 1.2, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
+                      >
+                        <ChevronRight size={16} />
+                        {t('applyNow', 'आवेदन करें')}
+                      </button>
+                      <button
+                        onClick={() => onSelectService(service)}
+                        className="btn-gov-ghost"
+                        style={{ flex: 1, padding: '8px 10px', fontSize: '13px' }}
+                      >
+                        {t('viewDetails', 'विवरण')}
+                      </button>
+                    </>
                   ) : (
                     <button
                       onClick={() => onSelectService(service)}
                       className="btn-gov-outline"
-                      style={{ flex: 1 }}
+                      style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
                     >
                       <FileText size={15} />
-                      {t('howToApply', 'मार्गदर्शन देखें')}
+                      {t('howToApply', 'आवेदन कैसे करें (मार्गदर्शन)')}
                     </button>
                   )}
                 </div>
 
-                {service.officialSource && (
-                  <div style={{ marginTop: '10px', fontSize: '11px', color: '#94a3b8', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <span>आधिकारिक संदर्भ: {service.officialSource}</span>
+                {service.officialSourceMetadata?.portalUrl && (
+                  <div style={{ marginTop: '12px', fontSize: '11px', color: '#94a3b8', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <span>{service.officialSourceMetadata.portalName || t('officialSource', 'आधिकारिक संदर्भ पोर्टल')}</span>
                     <ExternalLink size={12} />
                   </div>
                 )}

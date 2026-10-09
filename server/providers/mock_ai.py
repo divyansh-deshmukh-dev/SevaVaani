@@ -19,8 +19,18 @@ class MockAIProvider(BaseAIProvider):
         expecting_field = input_data.expectingField
 
         # 1. Global Commands
-        # Help / Handoff
-        if any(h in lower_text for h in ["help", "madad", "मदद", "सहायता", "operator", "human"]):
+        # Help / Handoff (Operator or general assistance, but NOT financial/welfare help)
+        is_financial_or_need = any(w in lower_text for w in [
+            "financial", "loan", "paisa", "paise", "आर्थिक", "kheti", "kisan", "farmer",
+            "योजना", "scholarship", "pension", "card", "card banana"
+        ])
+        handoff_keywords = ["operator", "human agent", "talk to human", "officer", "adhikari"]
+        direct_help_phrases = ["help", "help please", "madad", "मदद", "मदत", "सहायता", "मुझे मदद चाहिए", "मला मदत हवी", "help me"]
+
+        is_handoff_request = any(k in lower_text for k in handoff_keywords)
+        is_direct_help = any(lower_text.strip() == p or p in lower_text for p in direct_help_phrases)
+
+        if (is_handoff_request or (is_direct_help and not is_financial_or_need)):
             latency = int((time.perf_counter() - start_time) * 1000) + 15
             return UnderstandingResult(
                 transcript=text,
@@ -30,6 +40,7 @@ class MockAIProvider(BaseAIProvider):
                 latencyMs=latency,
                 provider="mock"
             )
+
 
         # Repeat
         if any(r in lower_text for r in ["repeat", "phir se", "fir se", "दोबारा", "पुन्हा", "पुन्हा सांगा", "once again"]):
@@ -127,8 +138,30 @@ class MockAIProvider(BaseAIProvider):
             )
 
         # 4. Service Discovery / Problem Discovery State
-        # Check if direct service matches catalog
+        # Check problem / need patterns first if expressing user situation/need
+        problem_need_phrases = [
+            "financial help", "आर्थिक सहायता", "आर्थिक मदत", "पैशांची गरज",
+            "main farmer hoon", "मैं किसान हूँ", "मी शेतकरी आहे", "i am a farmer",
+            "kisan hoon", "farmer needing", "farmer need",
+            "need assistance", "financial support", "paisa chahiye", "paise ki jarurat",
+            "student needing", "student hoon", "senior citizen needing"
+        ]
+        is_problem_need = any(p in lower_text for p in problem_need_phrases)
+
+        # Explicit direct service match from catalog
         matched_service, conf, _ = catalog.match_service(text, input_data.language)
+
+        if is_problem_need and not any(action_kw in lower_text for action_kw in ["apply", "आवेदन", "नोंदणी", "banana hai", "बनवाना है"]):
+            latency = int((time.perf_counter() - start_time) * 1000) + 20
+            return UnderstandingResult(
+                transcript=text,
+                detectedLanguage=input_data.language,
+                intent="PROBLEM_NEED",
+                confidence=0.90,
+                latencyMs=latency,
+                provider="mock"
+            )
+
         if matched_service and conf >= 0.70:
             latency = int((time.perf_counter() - start_time) * 1000) + 20
             return UnderstandingResult(
@@ -141,12 +174,10 @@ class MockAIProvider(BaseAIProvider):
                 provider="mock"
             )
 
-        # Check problem / need patterns
+        # General need keywords fallback
         need_keywords = [
-            "farmer", "किसान", "शेतकरी", "pension", "पेंशन", "पेन्शन",
-            "ration", "राशन", "रेशन", "scholarship", "छात्रवृत्ति", "शिष्यवृत्ती",
-            "house", "makan", "आवास", "घर", "financial help", "आर्थिक सहायता",
-            "मदत", "सहाय्य", "help"
+            "farmer", "किसान", "शेतकरी", "financial help", "आर्थिक सहायता",
+            "मदत", "सहाय्य", "help needed"
         ]
         if any(kw in lower_text for kw in need_keywords):
             latency = int((time.perf_counter() - start_time) * 1000) + 20
@@ -154,7 +185,7 @@ class MockAIProvider(BaseAIProvider):
                 transcript=text,
                 detectedLanguage=input_data.language,
                 intent="PROBLEM_NEED",
-                confidence=0.88,
+                confidence=0.85,
                 latencyMs=latency,
                 provider="mock"
             )

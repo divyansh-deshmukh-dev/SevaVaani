@@ -44,9 +44,12 @@ class LocalizedString(BaseModel):
 
 class ServiceDefinition(BaseModel):
     serviceId: str
+    id: Optional[str] = None
     name: LocalizedString
     category: str
+    serviceType: str = "welfare_scheme"
     aliases: list[str] = []
+    applicationMode: str = "guidance-only"
     directApplicationSupported: bool = False
     guidanceAvailable: bool = True
     description: LocalizedString
@@ -54,8 +57,17 @@ class ServiceDefinition(BaseModel):
     eligibilityRuleId: Optional[str] = None
     apiAdapter: Optional[str] = None
     requiredDocuments: list[LocalizedString] = []
+    guidance: Optional[dict[str, Any]] = None
     officialSource: Optional[str] = None
+    officialSourceMetadata: Optional[dict[str, Any]] = None
     isDemo: bool = True
+    demoStatus: Optional[str] = None
+
+    def model_post_init(self, __context: Any) -> None:
+        if not self.id:
+            self.id = self.serviceId
+        if self.applicationMode == "direct-demo":
+            self.directApplicationSupported = True
 
 # Form Schema
 class FormFieldDefinition(BaseModel):

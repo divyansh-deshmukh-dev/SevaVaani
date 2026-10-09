@@ -38,6 +38,33 @@ export interface LocalizedString {
   mr: string;
 }
 
+export interface GuidanceStep {
+  stepNumber: number;
+  title: LocalizedString;
+  description: LocalizedString;
+}
+
+export interface GuidanceFaq {
+  question: LocalizedString;
+  answer: LocalizedString;
+}
+
+export interface ServiceGuidance {
+  whoIsItFor?: LocalizedString;
+  eligibilityCriteria?: LocalizedString[];
+  steps?: GuidanceStep[];
+  faqs?: GuidanceFaq[];
+  disclaimer?: LocalizedString;
+}
+
+export interface OfficialSourceMetadata {
+  portalName?: string;
+  portalUrl?: string;
+  department?: string;
+  tollFree?: string;
+  lastVerified?: string;
+}
+
 export interface ServiceDefinition {
   serviceId: string;
   name: LocalizedString;
@@ -46,6 +73,11 @@ export interface ServiceDefinition {
   directApplicationSupported: boolean;
   guidanceAvailable: boolean;
   description: LocalizedString;
+  applicationMode?: 'direct-demo' | 'guidance-only';
+  serviceType?: string;
+  demoStatus?: string;
+  guidance?: ServiceGuidance;
+  officialSourceMetadata?: OfficialSourceMetadata;
   formSchemaId?: string;
   eligibilityRuleId?: string;
   apiAdapter?: string;
@@ -53,6 +85,7 @@ export interface ServiceDefinition {
   officialSource?: string;
   isDemo: boolean;
 }
+
 
 export interface FormFieldDefinition {
   id: string;

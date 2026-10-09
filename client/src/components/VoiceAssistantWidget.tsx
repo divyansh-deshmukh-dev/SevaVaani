@@ -17,7 +17,7 @@ import {
   ShieldAlert,
   Sparkles
 } from 'lucide-react';
-import type { LanguageCode, TurnResponse, VoiceState } from '../types';
+import type { LanguageCode, TurnResponse, VoiceState, ServiceDefinition } from '../types';
 
 interface VoiceAssistantWidgetProps {
   language: LanguageCode;
@@ -36,6 +36,7 @@ interface VoiceAssistantWidgetProps {
   onSetTypedInput: (text: string) => void;
   onSetManualFieldValue: (text: string) => void;
   onStartTracking: (appId: string) => void;
+  onOpenServiceDetail?: (service: ServiceDefinition) => void;
   t: (key: string, fallback?: string) => string;
 }
 
@@ -56,8 +57,10 @@ export function VoiceAssistantWidget({
   onSetTypedInput,
   onSetManualFieldValue,
   onStartTracking,
+  onOpenServiceDetail,
   t
 }: VoiceAssistantWidgetProps) {
+
   const currentMessage = turnResponse
     ? turnResponse.assistantMessage[language] || turnResponse.assistantMessage.hi
     : t('ready', 'सहायक तैयार है');
@@ -456,19 +459,32 @@ export function VoiceAssistantWidget({
                     <ExternalLink size={15} color="#0d4436" />
                   </div>
 
-                  <button
-                    onClick={() => onAction('RESTART')}
-                    className="btn-gov-primary"
-                    style={{ width: '100%' }}
-                  >
-                    <ArrowLeft size={16} />
-                    मुख्य पृष्ठ पर लौटें
-                  </button>
+                  <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                    {turnResponse.service && onOpenServiceDetail && (
+                      <button
+                        onClick={() => onOpenServiceDetail(turnResponse.service!)}
+                        className="btn-gov-primary"
+                        style={{ flex: 1.2, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
+                      >
+                        <FileText size={16} />
+                        {t('openServiceDetail', 'पूर्ण विवरण एवं चरण देखें')}
+                      </button>
+                    )}
+                    <button
+                      onClick={() => onAction('RESTART')}
+                      className="btn-gov-ghost"
+                      style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
+                    >
+                      <ArrowLeft size={16} />
+                      {t('backToHome', 'मुख्य पृष्ठ पर लौटें')}
+                    </button>
+                  </div>
                 </>
               );
             })()}
           </div>
         )}
+
 
         {/* D. FINAL REVIEW VIEW */}
         {turnResponse?.state === 'FINAL_REVIEW' && (
@@ -759,13 +775,30 @@ export function VoiceAssistantWidget({
               💡 {language === 'hi' ? 'बोलने या चुनने के लिए टैप करें:' : (language === 'mr' ? 'बोलण्यासाठी किंवा निवडण्यासाठी टॅप करा:' : 'Try speaking or tapping these examples:')}
             </div>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
-              {[
-                { label: 'PM-Kisan आवेदन', query: 'PM-Kisan' },
-                { label: 'किसान हूँ मदद चाहिए', query: 'किसान हूँ मदद चाहिए' },
-                { label: 'राशन कार्ड सहायता', query: 'राशन कार्ड' },
-                { label: 'वृद्धावस्था पेंशन', query: 'वृद्धावस्था पेंशन' },
-                { label: 'छात्रवृत्ति', query: 'छात्रवृत्ति' }
-              ].map((chip, idx) => (
+              {(language === 'mr'
+                ? [
+                    { label: '🌾 PM-Kisan अर्ज', query: 'PM-Kisan' },
+                    { label: '🆔 आधार कार्ड हवे आहे', query: 'मला आधार कार्ड बनवायचे आहे' },
+                    { label: '🚜 शेतकरी आहे मदत हवी', query: 'मी शेतकरी आहे मला आर्थिक मदत हवी' },
+                    { label: '🍚 रेशन कार्ड साहाय्य', query: 'नवीन रेशन कार्ड' },
+                    { label: '👵 वृद्धावस्था पेन्शन', query: 'वृद्धावस्था पेन्शन' }
+                  ]
+                : language === 'en'
+                ? [
+                    { label: '🌾 Apply for PM-Kisan', query: 'PM-Kisan' },
+                    { label: '🆔 Need Aadhaar Card', query: 'I want to apply for Aadhaar card' },
+                    { label: '🚜 Farmer needing help', query: 'I am a farmer and need financial assistance' },
+                    { label: '🍚 Ration Card Guidance', query: 'Ration card' },
+                    { label: '👵 Old Age Pension', query: 'Old age pension' }
+                  ]
+                : [
+                    { label: '🌾 PM-Kisan आवेदन', query: 'PM-Kisan' },
+                    { label: '🆔 आधार कार्ड बनवाना है', query: 'मुझे आधार कार्ड बनवाना है' },
+                    { label: '🚜 किसान हूँ मदद चाहिए', query: 'मैं किसान हूँ मुझे वित्तीय मदद चाहिए' },
+                    { label: '🍚 राशन कार्ड सहायता', query: 'राशन कार्ड' },
+                    { label: '👵 वृद्धावस्था पेंशन', query: 'वृद्धावस्था पेंशन' }
+                  ]
+              ).map((chip, idx) => (
                 <button
                   key={idx}
                   onClick={() => onSendText(chip.query)}
@@ -781,10 +814,11 @@ export function VoiceAssistantWidget({
                     transition: 'all 0.15s'
                   }}
                 >
-                  🌾 {chip.label}
+                  {chip.label}
                 </button>
               ))}
             </div>
+
           </div>
         )}
       </div>

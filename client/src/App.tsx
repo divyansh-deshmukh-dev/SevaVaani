@@ -30,6 +30,8 @@ import { AuthModal } from './components/AuthModal';
 import { NotificationsDrawer } from './components/NotificationsDrawer';
 import { AccessibilityModal } from './components/AccessibilityModal';
 import { ServicesView } from './components/ServicesView';
+import { ApplicationLauncherView } from './components/ApplicationLauncherView';
+import { ServiceDetailView } from './components/ServiceDetailView';
 import { ApplicationsView } from './components/ApplicationsView';
 import { TrackStatusView } from './components/TrackStatusView';
 import { DocumentsView } from './components/DocumentsView';
@@ -42,8 +44,10 @@ import { Footer } from './components/Footer';
 export function App() {
   const [language, setLanguage] = useState<LanguageCode>('hi');
   const [activeTab, setActiveTab] = useState<
-    'assistant' | 'services' | 'applications' | 'track' | 'docs' | 'help' | 'operator' | 'eval' | 'about'
+    'assistant' | 'services' | 'launcher' | 'service_detail' | 'applications' | 'track' | 'docs' | 'help' | 'operator' | 'eval' | 'about'
   >('assistant');
+  const [selectedServiceForDetail, setSelectedServiceForDetail] = useState<ServiceDefinition | null>(null);
+
 
   // Session & Voice Engine state
   const [turnResponse, setTurnResponse] = useState<TurnResponse | null>(null);
@@ -203,11 +207,26 @@ export function App() {
     }
   };
 
+  const handleOpenServiceDetail = (service: ServiceDefinition) => {
+    setSelectedServiceForDetail(service);
+    setActiveTab('service_detail');
+    setErrorMessage('');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleApplyService = (serviceId: string) => {
+    const s = services.find((x) => x.serviceId === serviceId);
+    setActiveTab('assistant');
+    const query = s ? (s.name[language] || s.name.en || serviceId) : serviceId;
+    handleSendText(query);
+  };
+
   const toggle2G = () => {
     const next = !simulate2G;
     setSimulate2G(next);
     apiClient.simulate2G = next;
   };
+
 
   const speakMessage = (text: string, lang: LanguageCode) => {
     setVoiceState('SPEAKING');
@@ -598,9 +617,11 @@ export function App() {
                         setActiveTab('track');
                         handleCheckStatus();
                       }}
+                      onOpenServiceDetail={handleOpenServiceDetail}
                       t={t}
                     />
                   </div>
+
                 </div>
               </div>
             </section>
@@ -630,7 +651,7 @@ export function App() {
                       color: '#c2410c',
                       bg: '#fff7ed',
                       border: '#fed7aa',
-                      action: () => handleSendText('PM-Kisan')
+                      action: () => setActiveTab('launcher')
                     },
                     {
                       title: t('qaStatusTitle', 'आवेदन की स्थिति'),
@@ -720,121 +741,68 @@ export function App() {
                     className="btn-gov-ghost"
                     style={{ fontSize: '13px' }}
                   >
-                    सभी योजनाएं देखें <ArrowRight size={14} />
+                    {t('viewAllServices', 'सभी सेवाएं देखें')} <ArrowRight size={14} />
                   </button>
                 </div>
 
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '18px' }}>
-                  {/* PM-Kisan Card (Featured Direct Application) */}
-                  <div
-                    style={{
-                      backgroundColor: '#ffffff',
-                      borderRadius: '14px',
-                      border: '2px solid #86efac',
-                      boxShadow: 'var(--shadow-sm)',
-                      padding: '22px',
-                      display: 'flex',
-                      flexDirection: 'column',
-                      justifyContent: 'space-between'
-                    }}
-                  >
-                    <div>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
-                        <span className="badge-gov badge-gov-green">
-                          ✓ {t('onlineDemoAvailable', 'ऑनलाइन डेमो आवेदन उपलब्ध')}
-                        </span>
-                        <span className="badge-gov badge-gov-proto">डेमो</span>
-                      </div>
-                      <h4 style={{ fontSize: '17px', fontWeight: 700, color: '#0d4436', marginBottom: '6px' }}>
-                        पीएम-किसान सम्मान निधि किसान पंजीकरण
-                      </h4>
-                      <p style={{ fontSize: '13.5px', color: '#475569', lineHeight: 1.5, marginBottom: '16px' }}>
-                        पात्र किसान परिवारों को प्रति वर्ष ₹6,000 की प्रत्यक्ष आय सहायता तीन समान किस्तों में।
-                      </p>
-                    </div>
-                    <button
-                      onClick={() => handleSendText('PM-Kisan')}
-                      className="btn-gov-primary"
-                      style={{ width: '100%' }}
-                    >
-                      <Mic size={16} />
-                      {t('applyNow', 'आवेदन करें (आवाज़ से)')}
-                    </button>
-                  </div>
+                  {services.slice(0, 3).map((service) => {
+                    const isDirect = service.applicationMode === 'direct-demo' || service.directApplicationSupported === true;
+                    const serviceName = service.name[language] || service.name.hi;
+                    const serviceDesc = service.description[language] || service.description.hi;
 
-                  {/* Ration Card */}
-                  <div
-                    style={{
-                      backgroundColor: '#ffffff',
-                      borderRadius: '14px',
-                      border: '1px solid #cbd5e1',
-                      boxShadow: 'var(--shadow-sm)',
-                      padding: '22px',
-                      display: 'flex',
-                      flexDirection: 'column',
-                      justifyContent: 'space-between'
-                    }}
-                  >
-                    <div>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
-                        <span className="badge-gov badge-gov-blue">
-                          {t('guidanceAvailable', 'मार्गदर्शन उपलब्ध')}
-                        </span>
-                        <span className="badge-gov badge-gov-proto">डेमो</span>
+                    return (
+                      <div
+                        key={service.serviceId}
+                        style={{
+                          backgroundColor: '#ffffff',
+                          borderRadius: '14px',
+                          border: isDirect ? '2px solid #86efac' : '1px solid #cbd5e1',
+                          boxShadow: 'var(--shadow-sm)',
+                          padding: '22px',
+                          display: 'flex',
+                          flexDirection: 'column',
+                          justifyContent: 'space-between'
+                        }}
+                      >
+                        <div>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
+                            <span className={`badge-gov ${isDirect ? 'badge-gov-green' : 'badge-gov-blue'}`}>
+                              {isDirect ? `✓ ${t('onlineDemoAvailable', 'ऑनलाइन डेमो आवेदन उपलब्ध')}` : t('guidanceAvailable', 'मार्गदर्शन उपलब्ध')}
+                            </span>
+                            <span className="badge-gov badge-gov-proto">
+                              {t('prototypeBadge', 'डेमो')}
+                            </span>
+                          </div>
+                          <h4 style={{ fontSize: '17px', fontWeight: 700, color: '#0d4436', marginBottom: '6px' }}>
+                            {serviceName}
+                          </h4>
+                          <p style={{ fontSize: '13.5px', color: '#475569', lineHeight: 1.5, marginBottom: '16px' }}>
+                            {serviceDesc}
+                          </p>
+                        </div>
+                        {isDirect ? (
+                          <button
+                            onClick={() => handleApplyService(service.serviceId)}
+                            className="btn-gov-primary"
+                            style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
+                          >
+                            <Mic size={16} />
+                            {t('applyNow', 'आवेदन करें (आवाज़ से)')}
+                          </button>
+                        ) : (
+                          <button
+                            onClick={() => handleOpenServiceDetail(service)}
+                            className="btn-gov-outline"
+                            style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
+                          >
+                            <FileText size={16} />
+                            {t('howToApply', 'आवेदन मार्गदर्शन')}
+                          </button>
+                        )}
                       </div>
-                      <h4 style={{ fontSize: '17px', fontWeight: 700, color: '#0d4436', marginBottom: '6px' }}>
-                        राष्ट्रीय खाद्य सुरक्षा राशन कार्ड सहायता
-                      </h4>
-                      <p style={{ fontSize: '13.5px', color: '#475569', lineHeight: 1.5, marginBottom: '16px' }}>
-                        नया राशन कार्ड बनवाने, परिवार के सदस्य जोड़ने और रियायती खाद्यान्न पात्रता संबंधी मार्गदर्शन।
-                      </p>
-                    </div>
-                    <button
-                      onClick={() => handleSendText('राशन कार्ड')}
-                      className="btn-gov-outline"
-                      style={{ width: '100%' }}
-                    >
-                      <FileText size={16} />
-                      {t('howToApply', 'आवेदन मार्गदर्शन')}
-                    </button>
-                  </div>
-
-                  {/* Senior Citizen Pension */}
-                  <div
-                    style={{
-                      backgroundColor: '#ffffff',
-                      borderRadius: '14px',
-                      border: '1px solid #cbd5e1',
-                      boxShadow: 'var(--shadow-sm)',
-                      padding: '22px',
-                      display: 'flex',
-                      flexDirection: 'column',
-                      justifyContent: 'space-between'
-                    }}
-                  >
-                    <div>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
-                        <span className="badge-gov badge-gov-blue">
-                          {t('guidanceAvailable', 'मार्गदर्शन उपलब्ध')}
-                        </span>
-                        <span className="badge-gov badge-gov-proto">डेमो</span>
-                      </div>
-                      <h4 style={{ fontSize: '17px', fontWeight: 700, color: '#0d4436', marginBottom: '6px' }}>
-                        राष्ट्रीय सामाजिक सहायता वृद्धावस्था पेंशन
-                      </h4>
-                      <p style={{ fontSize: '13.5px', color: '#475569', lineHeight: 1.5, marginBottom: '16px' }}>
-                        गरीबी रेखा से नीचे रहने वाले 60 वर्ष या उससे अधिक आयु के वरिष्ठ नागरिकों को मासिक पेंशन।
-                      </p>
-                    </div>
-                    <button
-                      onClick={() => handleSendText('वृद्धावस्था पेंशन')}
-                      className="btn-gov-outline"
-                      style={{ width: '100%' }}
-                    >
-                      <FileText size={16} />
-                      {t('howToApply', 'आवेदन मार्गदर्शन')}
-                    </button>
-                  </div>
+                    );
+                  })}
                 </div>
               </div>
             </section>
@@ -969,17 +937,35 @@ export function App() {
           <ServicesView
             language={language}
             services={services}
-            onSelectService={(srv) => {
-              handleSendText(srv.serviceId);
-              setActiveTab('assistant');
-            }}
-            onApplyService={(srvId) => {
-              handleAction('APPLY_NOW', srvId);
-              setActiveTab('assistant');
-            }}
+            onSelectService={handleOpenServiceDetail}
+            onApplyService={handleApplyService}
             t={t}
           />
         )}
+
+        {/* VIEW: APPLICATION LAUNCHER */}
+        {activeTab === 'launcher' && (
+          <ApplicationLauncherView
+            language={language}
+            services={services}
+            onApplyService={handleApplyService}
+            onViewGuidance={handleOpenServiceDetail}
+            onExploreAllServices={() => setActiveTab('services')}
+            t={t}
+          />
+        )}
+
+        {/* VIEW: SERVICE DETAIL & GUIDANCE */}
+        {activeTab === 'service_detail' && selectedServiceForDetail && (
+          <ServiceDetailView
+            service={selectedServiceForDetail}
+            language={language}
+            onBack={() => setActiveTab('services')}
+            onApplyService={handleApplyService}
+            t={t}
+          />
+        )}
+
 
         {/* VIEW 3: MY APPLICATIONS */}
         {activeTab === 'applications' && (

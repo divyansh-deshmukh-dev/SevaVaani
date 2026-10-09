@@ -53,7 +53,8 @@ export function Header({
   const navItems = [
     { id: 'assistant', label: t('navHome', 'Citizen Assistant'), icon: Mic },
     { id: 'services', label: t('navServices', 'Services Catalog'), icon: Layers },
-    { id: 'applications', label: t('navApplications', 'My Applications'), icon: Briefcase },
+    { id: 'launcher', label: t('navLauncher', 'Apply Online'), icon: Briefcase },
+    { id: 'applications', label: t('navApplications', 'My Applications'), icon: FileText },
     { id: 'track', label: t('navTrack', 'Track Status'), icon: Search },
     { id: 'docs', label: t('navDocs', 'Documents'), icon: FileText },
     { id: 'help', label: t('navHelp', 'Help & Support'), icon: HelpCircle },
@@ -61,6 +62,14 @@ export function Header({
     { id: 'eval', label: t('navMetrics', 'Metrics & Lab'), icon: Activity },
     { id: 'about', label: t('navAbout', 'About Project'), icon: Info }
   ];
+
+  const alertBadgeText = language === 'hi' ? 'सांविधिक सूचना' : (language === 'mr' ? 'वैधानिक सूचना' : 'STATUTORY ALERT');
+  const helpdeskText = language === 'hi'
+    ? 'नागरिक सहायता: 1800-000-DEMO (निशुल्क)'
+    : (language === 'mr' ? 'नागरिक मदत कक्ष: 1800-000-DEMO (विनामूल्य)' : 'Citizen Helpdesk: 1800-000-DEMO (Toll-Free)');
+  const net2gLabel = language === 'hi'
+    ? `2G नेटवर्क: ${simulate2G ? 'सक्रिय (800ms)' : 'बंद'}`
+    : (language === 'mr' ? `2G नेटवर्क: ${simulate2G ? 'सक्रिय (800ms)' : 'बंद'}` : `2G Edge Network: ${simulate2G ? 'Active (800ms)' : 'OFF'}`);
 
   return (
     <header style={{ backgroundColor: '#ffffff', borderBottom: '1px solid var(--border-light)' }}>
@@ -101,7 +110,7 @@ export function Header({
               }}
             >
               <ShieldCheck size={12} />
-              STATUTORY ALERT
+              {alertBadgeText}
             </span>
             <span style={{ color: '#d1fae5', fontWeight: 500, fontSize: '12px' }}>
               {t('statutoryNotice')}
@@ -112,7 +121,7 @@ export function Header({
           <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexShrink: 0 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#a7f3d0', fontSize: '12px' }}>
               <PhoneCall size={13} color="#f59e0b" />
-              <span>Citizen Helpdesk: <strong>1800-000-DEMO</strong> (Toll-Free)</span>
+              <span>{helpdeskText}</span>
             </div>
 
             <button
@@ -134,11 +143,12 @@ export function Header({
               title="Simulates 2G edge network latency (800ms) for realistic rural verification"
             >
               <Wifi size={12} />
-              2G Network: {simulate2G ? 'Active (800ms)' : 'OFF'}
+              {net2gLabel}
             </button>
           </div>
         </div>
       </div>
+
 
       {/* 2. MAIN INSTITUTIONAL HEADER BAR */}
       <div style={{ padding: '12px 0', borderBottom: '1px solid var(--border-light)' }}>
@@ -203,7 +213,7 @@ export function Header({
                     fontWeight: 700
                   }}
                 >
-                  PROTOTYPE MVP
+                  {language === 'hi' ? 'प्रोटोटाइप एमवीपी' : (language === 'mr' ? 'प्रोटोटाइप एमव्हीपी' : 'PROTOTYPE MVP')}
                 </span>
               </div>
               <p style={{ fontSize: '13px', color: '#475569', marginTop: '2px' }}>

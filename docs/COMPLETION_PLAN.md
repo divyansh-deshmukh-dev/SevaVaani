@@ -81,25 +81,38 @@ Fresh setup can start frontend and backend without undocumented steps.
 # PHASE 2 — DOMAIN MODEL & SERVICE CATALOG
 
 ## Checklist
-- [x] Service schema
-- [x] Service catalog
-- [x] PM-Kisan entry
-- [x] Additional guidance entries
-- [x] Aliases
-- [x] Multilingual metadata
-- [x] Service search
-- [x] Service APIs
+- [x] Service schema (enriched with applicationMode, guidance, officialSourceMetadata, demoStatus)
+- [x] Service catalog (centralized single source of truth across Home, Services, Launcher, Details, Voice)
+- [x] PM-Kisan entry (Agriculture, direct-demo mode)
+- [x] Identity service entry (Aadhaar, guidance-only mode, aliases)
+- [x] Food security entry (Ration card, guidance-only mode)
+- [x] Social welfare entry (Old age pension, guidance-only mode)
+- [x] Education entry (Post matric scholarship, guidance-only mode)
+- [x] Housing entry (PM Awas Yojana, guidance-only mode)
+- [x] Health entry (Ayushman Bharat, guidance-only mode)
+- [x] Certificate entry (Income certificate, guidance-only mode)
+- [x] Aliases & multilingual metadata in Hindi, Marathi, and English
+- [x] Direct service intent resolution ("Mujhe Aadhaar card banana hai" -> aadhaar_service)
+- [x] Problem/Need intent separation ("Main farmer hoon aur mujhe financial help chahiye" -> PROBLEM_NEED)
+- [x] Service search endpoint (`GET /api/services/search`)
+- [x] Service guidance endpoint (`GET /api/services/{id}/guidance`)
+- [x] Service form endpoint (`GET /api/services/{id}/form`)
+- [x] Service eligibility endpoint (`GET /api/services/{id}/eligibility`)
 
 ### Acceptance test
-"PM Kisan", "PM-Kisan", and equivalent natural-language requests resolve to the configured PM-Kisan service.
+- "PM Kisan", "PM-Kisan", and equivalent requests resolve to PM-Kisan form.
+- "Mujhe Aadhaar card banana hai" resolves to Aadhaar service guidance without asking for scheme name.
+- "Main farmer hoon aur mujhe financial help chahiye" resolves to problem/need discovery without entering direct form.
+- All 8 services and search/guidance/form/eligibility endpoints return valid structured responses.
 
 ### Evidence
-- Files: `server/data/services.json`, `server/services/catalog.py`, `server/routes/services.py`, `tests/test_services.py`
+- Files: `server/data/services.json`, `server/services/catalog.py`, `server/routes/services.py`, `server/core/models.py`, `tests/test_services.py`
 - Commands: `.\server\.venv\Scripts\pytest.exe tests/test_services.py`
-- Tests: 5 service catalog tests passed (100% exact & alias & multilingual match for PM-Kisan and guidance services)
+- Tests: 9 service catalog tests passed (100% exact & alias & multilingual match for PM-Kisan, Aadhaar direct intent, Problem/Need intent separation, Search, Form, and Eligibility APIs)
 
 **Phase status:** [x]  
 **Completion:** 100%
+
 
 ---
 
@@ -421,31 +434,32 @@ Complete summary is verified with edit capabilities and tracking status.
 # PHASE 15 — FRONTEND EXPERIENCE
 
 ## Checklist
-- [x] Welcome
-- [x] Language selection
-- [x] Unified assistant
-- [x] Voice interaction
-- [x] Service recommendation
-- [x] Guided form
-- [x] Confirmation UI
-- [x] Fallback UI
-- [x] Final review
-- [x] Submission result
-- [x] Guidance mode
-- [x] About
-- [x] Accessibility basics
-- [x] Responsive design
+- [x] Welcome & Hero assistant integration
+- [x] Language selection (Hindi, Marathi, English)
+- [x] Dedicated localization architecture (`locales/hi/`, `locales/mr/`, `locales/en/`) with zero hardcoded English in vernacular UI
+- [x] Unified voice assistant with live speech recognition & text fallbacks
+- [x] Service recommendation & problem/need discovery
+- [x] Single source of truth for services (Home, Popular Services, Services Catalog, Launcher, Guidance, Voice)
+- [x] Application Launcher (`ApplicationLauncherView.tsx`) dynamically listing all `direct-demo` services
+- [x] Service Detail & Guidance View (`ServiceDetailView.tsx`) with criteria, required documents, step-by-step guidance, official metadata, FAQs, and prototype demo notices
+- [x] Guided form with 3-level fallback ladder and manual input
+- [x] Confirmation UI with speech playback
+- [x] Final review with per-field edit capabilities
+- [x] Submission result with application tracking
+- [x] Accessibility modal (font size, contrast, reduced motion, voice speed)
+- [x] Responsive digital public service layout
 
 ### Acceptance test
-A first-time user can understand what to do without technical knowledge.
+A first-time user can discover services, launch direct voice-assisted demo applications, or view detailed official guidance and documents in pure Hindi, Marathi, or English.
 
 ### Evidence
-- Files: `client/src/App.tsx`, `client/src/index.css`, `client/src/i18n/`
+- Files: `client/src/App.tsx`, `client/src/components/ApplicationLauncherView.tsx`, `client/src/components/ServiceDetailView.tsx`, `client/src/components/ServicesView.tsx`, `client/src/components/VoiceAssistantWidget.tsx`, `client/src/locales/`
 - Commands: `npm --prefix client run build`
-- Tests: Client builds cleanly in 520ms, responsive mobile-first UI with Devanagari fonts.
+- Tests: Client builds cleanly in 880ms with 0 errors; full localization verified.
 
 **Phase status:** [x]  
 **Completion:** 100%
+
 
 ---
 
