@@ -183,7 +183,7 @@ export const en: Record<string, string> = {
   voiceSpeed: "Voice Speed",
   saveChanges: "Save Changes",
 
-  // Help & Operator Handoff
+  // Help & Operator Handoff & RBAC
   helpTitle: "Help & Citizen Support",
   helpSub: "Need assistance with using SevaVaani or an application?",
   requestAssistance: "Request Human Operator Support",
@@ -191,6 +191,20 @@ export const en: Record<string, string> = {
   operatorSub: "Live citizen sessions, telemetry, and manual assistance queue",
   handoffActive: "Operator Assistance Active",
   waitingForAgent: "Connecting to a human support executive...",
+  loginCitizenTab: "Citizen Login",
+  loginOperatorTab: "Operator Desk Login",
+  operatorIdLabel: "Operator ID",
+  operatorPinLabel: "Security PIN / Access Code",
+  operatorDeptLabel: "Department / Center",
+  demoOperatorLogin: "Demo Operator Login (1-Click)",
+  demoCitizenLogin: "Demo Citizen Login (1-Click)",
+  accessRestrictedTitle: "Access Restricted",
+  accessRestrictedDesc: "The Operator Escalation Portal is restricted to authorized helpdesk officers only. Citizens may use the Citizen Assistant.",
+  loginAsOperator: "Login as Operator",
+  trackAnyAppTitle: "Track Any Application",
+  enterAppIdTrack: "Enter Application ID (e.g. DEMO-PMK-20261009-001)...",
+  trackBtn: "Check Status",
+
 
   // Voice Form Interaction Controls
   step: "Step",

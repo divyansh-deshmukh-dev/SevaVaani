@@ -20,6 +20,7 @@ export function ApplicationsView({
   t
 }: ApplicationsViewProps) {
   const [selectedApp, setSelectedApp] = useState<ApplicationRecord | null>(null);
+  const [searchId, setSearchId] = useState('');
 
   const getStatusBadge = (status: string) => {
     if (status.includes('SUBMITTED') || status.includes('APPROVED')) {
@@ -29,7 +30,7 @@ export function ApplicationsView({
   };
 
   return (
-    <div className="gov-container" style={{ padding: '24px 0' }}>
+    <div className="gov-container" style={{ padding: '24px 0 48px' }}>
       {/* Header */}
       <div
         style={{
@@ -37,7 +38,7 @@ export function ApplicationsView({
           borderRadius: '16px',
           padding: '28px 32px',
           color: '#ffffff',
-          marginBottom: '28px',
+          marginBottom: '24px',
           boxShadow: 'var(--shadow-md)'
         }}
       >
@@ -65,6 +66,50 @@ export function ApplicationsView({
           {t('myAppsSub', 'आपके द्वारा शुरू किए गए या जमा किए गए डिजिटल सेवा आवेदनों की सूची।')}
         </p>
       </div>
+
+      {/* Application Status Search Box */}
+      <div
+        style={{
+          backgroundColor: '#ffffff',
+          borderRadius: '12px',
+          border: '1.5px solid #cbd5e1',
+          padding: '16px 20px',
+          marginBottom: '24px',
+          boxShadow: 'var(--shadow-xs)',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '12px',
+          flexWrap: 'wrap'
+        }}
+      >
+        <div style={{ flex: 1, minWidth: '240px', position: 'relative' }}>
+          <Search size={16} color="#94a3b8" style={{ position: 'absolute', left: '14px', top: '13px' }} />
+          <input
+            type="text"
+            value={searchId}
+            onChange={(e) => setSearchId(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && searchId.trim() && onTrackApp(searchId.trim())}
+            placeholder={t('enterAppIdTrack', 'आवेदन क्रमांक दर्ज करें (उदा. DEMO-PMK-20261009-001)...')}
+            style={{
+              width: '100%',
+              padding: '10px 14px 10px 38px',
+              borderRadius: '8px',
+              border: '1px solid #cbd5e1',
+              fontSize: '14px',
+              outline: 'none'
+            }}
+          />
+        </div>
+        <button
+          onClick={() => searchId.trim() && onTrackApp(searchId.trim())}
+          className="btn-gov-primary"
+          style={{ padding: '10px 20px', fontSize: '13.5px', display: 'flex', alignItems: 'center', gap: '6px' }}
+        >
+          <Search size={15} />
+          {t('trackBtn', 'स्थिति जांचें')}
+        </button>
+      </div>
+
 
       {applications.length === 0 ? (
         /* Empty State */

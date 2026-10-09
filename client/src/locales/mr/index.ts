@@ -183,7 +183,7 @@ export const mr: Record<string, string> = {
   voiceSpeed: "आवाजाचा वेग",
   saveChanges: "बदल जतन करा",
 
-  // Help & Operator Handoff
+  // Help & Operator Handoff & RBAC
   helpTitle: "मदत आणि पाठबळ",
   helpSub: "सेवावाणी वापरताना काही अडचण येत आहे का?",
   requestAssistance: "मानवी ऑपरेटरकडून मदत मागा",
@@ -191,6 +191,20 @@ export const mr: Record<string, string> = {
   operatorSub: "नागरिकांची सक्रिय सत्रे, निरीक्षण आणि मानवी मदत रांग",
   handoffActive: "ऑपरेटर मदत सक्रिय आहे",
   waitingForAgent: "सहाय्यक अधिकाऱ्यांशी संपर्क जोडला जात आहे...",
+  loginCitizenTab: "नागरिक लॉगिन (Citizen)",
+  loginOperatorTab: "ऑपरेटर डेस्क लॉगिन (Operator)",
+  operatorIdLabel: "ऑपरेटर ओळख क्रमांक (Operator ID)",
+  operatorPinLabel: "सुरक्षा पिन (PIN / Access Code)",
+  operatorDeptLabel: "विभाग / केंद्र (Department / Center)",
+  demoOperatorLogin: "डेमो ऑपरेटर लॉगिन करा (1-Click)",
+  demoCitizenLogin: "डेमो नागरिक लॉगिन करा (1-Click)",
+  accessRestrictedTitle: "प्रवेश प्रतिबंधित (Access Restricted)",
+  accessRestrictedDesc: "ऑपरेटर साहाय्य पोर्टल केवळ अधिकृत सेवा केंद्र / हेल्पडेस्क अधिकाऱ्यांसाठी राखीव आहे. नागरिक कृपया नागरिक सहाय्यक वापरा.",
+  loginAsOperator: "ऑपरेटर म्हणून लॉगिन करा",
+  trackAnyAppTitle: "कोणत्याही अर्जाची स्थिती तपासा",
+  enterAppIdTrack: "अर्ज क्रमांक प्रविष्ट करा (उदा. DEMO-PMK-20261009-001)...",
+  trackBtn: "स्थिती तपासा",
+
 
   // Voice Form Interaction Controls
   step: "टप्पा",

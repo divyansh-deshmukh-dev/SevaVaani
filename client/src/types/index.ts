@@ -142,6 +142,8 @@ export interface TurnResponse {
   detectedIntent?: string;
 }
 
+export type UserRole = 'citizen' | 'operator';
+
 export interface CitizenUser {
   name: string;
   mobile: string;
@@ -151,7 +153,11 @@ export interface CitizenUser {
   village: string;
   isGuest: boolean;
   isAuthenticated: boolean;
+  role: UserRole;
+  operatorId?: string;
+  department?: string;
 }
+
 
 export interface ApplicationRecord {
   applicationId: string;

@@ -795,8 +795,24 @@ The project can be declared complete only when all of the following are true:
 
 **Build & Verification Results:**
 - `npm --prefix client run build`: PASS (Vite production bundle built cleanly with 0 errors)
-- `.\server\.venv\Scripts\pytest.exe tests/`: PASS (32 of 32 tests passing with 100% success)
+- `.\server\.venv\Scripts\pytest.exe tests/`: PASS (36 of 36 tests passing with 100% success)
 - 100% functionality preserved: voice interaction, deterministic state machine, validations, confirmations, fallbacks, demo submission, status tracking, WER lab, and operator handoff.
+
+## Entry 3 — Role-Based Access Control (RBAC) & Navigation Streamlining
+**Status:** RBAC and navbar consolidation completed and verified.  
+**Date:** 2026-10-09  
+**Deliverables:**
+- **Navigation Bar Streamlining:** Removed duplicate `track` status tab from top navigation bar (`Header.tsx`) and footer; integrated application status search directly into the top of "My Applications" (`ApplicationsView.tsx`) with instant ID lookup.
+- **Role-Based Access Control (RBAC) in Authentication Modal:** Extended `AuthModal.tsx` to support distinct tabs for:
+  - *Citizen Login:* Mobile number + OTP (`123456`), 1-Click demo citizen login, or Guest mode (`role: 'citizen'`).
+  - *Operator Desk Login:* Operator ID (`OP-8821`), PIN (`8821`), department selection, and 1-Click demo operator login (`role: 'operator'`).
+- **Dynamic Portal Protection:**
+  - The "Operator Portal" (`operator`) tab is conditionally hidden from navigation for ordinary citizens and guests; it is rendered in the navbar ONLY when an operator is authenticated.
+  - In `App.tsx`, the operator view is strictly guarded: unauthenticated or citizen access renders an "Access Restricted" alert with a prompt to authenticate as an operator, preventing unauthorized access.
+  - Header profile button displays operator badge `🎧 OP: OP-8821` with distinct amber styling when logged in as an operator.
+- **Verification:**
+  - `npm --prefix client run build`: PASS (0 errors, Vite production build verified in 727ms)
+  - `.\server\.venv\Scripts\pytest.exe tests/`: PASS (36 of 36 tests passing)
 
 ---
 

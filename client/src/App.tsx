@@ -86,7 +86,8 @@ export function App() {
     district: 'Varanasi',
     village: 'Shivpur',
     isGuest: false,
-    isAuthenticated: true
+    isAuthenticated: true,
+    role: 'citizen'
   });
 
   // Applications List
@@ -660,7 +661,7 @@ export function App() {
                       color: '#1e40af',
                       bg: '#eff6ff',
                       border: '#bfdbfe',
-                      action: () => setActiveTab('track')
+                      action: () => setActiveTab('applications')
                     },
                     {
                       title: t('qaDocsTitle', 'जरूरी दस्तावेज़'),
@@ -1019,13 +1020,69 @@ export function App() {
           />
         )}
 
-        {/* VIEW 7: OPERATOR PORTAL */}
+        {/* VIEW 7: OPERATOR PORTAL (ROLE-BASED ACCESS CONTROL) */}
         {activeTab === 'operator' && (
-          <OperatorView
-            language={language}
-            handoffRecord={handoffRecord}
-            t={t}
-          />
+          user.role === 'operator' ? (
+            <OperatorView
+              language={language}
+              handoffRecord={handoffRecord}
+              t={t}
+            />
+          ) : (
+            <div className="gov-container" style={{ padding: '60px 16px', maxWidth: '640px', margin: '0 auto', textAlign: 'center' }}>
+              <div
+                style={{
+                  backgroundColor: '#ffffff',
+                  border: '1.5px solid #fed7aa',
+                  borderRadius: '16px',
+                  padding: '40px 28px',
+                  boxShadow: 'var(--shadow-md)'
+                }}
+              >
+                <div
+                  style={{
+                    width: '60px',
+                    height: '60px',
+                    borderRadius: '50%',
+                    backgroundColor: '#fff7ed',
+                    color: '#c2410c',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    margin: '0 auto 18px',
+                    border: '1px solid #fed7aa'
+                  }}
+                >
+                  <ShieldCheck size={32} />
+                </div>
+                <h3 style={{ fontSize: '22px', fontWeight: 800, color: '#9a3412', marginBottom: '10px' }}>
+                  {t('accessRestrictedTitle', 'अभिगम प्रतिबंधित (Access Restricted)')}
+                </h3>
+                <p style={{ fontSize: '14.5px', color: '#64748b', lineHeight: 1.6, marginBottom: '28px' }}>
+                  {t(
+                    'accessRestrictedDesc',
+                    'ऑपरेटर सहायता पोर्टल केवल अधिकृत जन सेवा केंद्र / हेल्पडेस्क ऑपरेटरों के लिए आरक्षित है। नागरिक कृपया नागरिक सहायक का उपयोग करें।'
+                  )}
+                </p>
+                <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>
+                  <button
+                    onClick={() => setActiveTab('assistant')}
+                    className="btn-gov-outline"
+                    style={{ padding: '10px 20px' }}
+                  >
+                    {t('navHome', 'नागरिक सहायक')}
+                  </button>
+                  <button
+                    onClick={() => setIsAuthModalOpen(true)}
+                    className="btn-gov-primary"
+                    style={{ backgroundColor: '#92400e', borderColor: '#78350f', padding: '10px 22px' }}
+                  >
+                    {t('loginAsOperator', 'ऑपरेटर के रूप में लॉगिन करें')}
+                  </button>
+                </div>
+              </div>
+            </div>
+          )
         )}
 
         {/* VIEW 8: EVALUATION & WER LAB */}
@@ -1067,7 +1124,13 @@ export function App() {
         isOpen={isAuthModalOpen}
         onClose={() => setIsAuthModalOpen(false)}
         user={user}
-        onUpdateUser={setUser}
+        onUpdateUser={(updatedUser) => {
+          setUser(updatedUser);
+          if (updatedUser.role !== 'operator' && activeTab === 'operator') {
+            setActiveTab('assistant');
+          }
+        }}
+        onOperatorLoginSuccess={() => setActiveTab('operator')}
         t={t}
       />
 

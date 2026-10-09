@@ -69,15 +69,7 @@ export function Footer({ language: _language, onTabChange, t }: FooterProps) {
                   onClick={() => onTabChange('applications')}
                   style={{ background: 'none', border: 'none', color: '#d1fae5', cursor: 'pointer', textAlign: 'left', padding: 0 }}
                 >
-                  {t('navApplications', 'मेरे आवेदन')}
-                </button>
-              </li>
-              <li>
-                <button
-                  onClick={() => onTabChange('track')}
-                  style={{ background: 'none', border: 'none', color: '#d1fae5', cursor: 'pointer', textAlign: 'left', padding: 0 }}
-                >
-                  {t('navTrack', 'आवेदन स्थिति ट्रैक करें')}
+                  {t('navApplications', 'मेरे आवेदन व स्थिति')}
                 </button>
               </li>
               <li>

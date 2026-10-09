@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import {
   Mic,
-  Search,
   HelpCircle,
   Activity,
   Info,
@@ -55,13 +54,15 @@ export function Header({
     { id: 'services', label: t('navServices', 'Services Catalog'), icon: Layers },
     { id: 'launcher', label: t('navLauncher', 'Apply Online'), icon: Briefcase },
     { id: 'applications', label: t('navApplications', 'My Applications'), icon: FileText },
-    { id: 'track', label: t('navTrack', 'Track Status'), icon: Search },
     { id: 'docs', label: t('navDocs', 'Documents'), icon: FileText },
     { id: 'help', label: t('navHelp', 'Help & Support'), icon: HelpCircle },
-    { id: 'operator', label: t('navOperator', 'Operator Portal'), icon: PhoneCall },
+    ...(user.role === 'operator'
+      ? [{ id: 'operator', label: t('navOperator', 'Operator Portal'), icon: PhoneCall }]
+      : []),
     { id: 'eval', label: t('navMetrics', 'Metrics & Lab'), icon: Activity },
     { id: 'about', label: t('navAbout', 'About Project'), icon: Info }
   ];
+
 
   const alertBadgeText = language === 'hi' ? 'सांविधिक सूचना' : (language === 'mr' ? 'वैधानिक सूचना' : 'STATUTORY ALERT');
   const helpdeskText = language === 'hi'
@@ -328,27 +329,39 @@ export function Header({
               )}
             </button>
 
-            {/* Citizen Profile / Sign In Pill */}
+            {/* User Profile / Sign In Pill (Role-Aware) */}
             <button
               onClick={onOpenAuth}
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: '8px',
-                backgroundColor: user.isAuthenticated ? '#ecfdf5' : '#ffffff',
-                border: '1.5px solid ' + (user.isAuthenticated ? '#10b981' : '#cbd5e1'),
+                backgroundColor: user.role === 'operator' && user.isAuthenticated
+                  ? '#fffbeb'
+                  : (user.isAuthenticated ? '#ecfdf5' : '#ffffff'),
+                border: user.role === 'operator' && user.isAuthenticated
+                  ? '1.5px solid #f59e0b'
+                  : ('1.5px solid ' + (user.isAuthenticated ? '#10b981' : '#cbd5e1')),
                 padding: '6px 14px',
                 borderRadius: '8px',
                 fontSize: '13px',
                 fontWeight: 600,
-                color: user.isAuthenticated ? '#065f46' : '#334155',
+                color: user.role === 'operator' && user.isAuthenticated
+                  ? '#92400e'
+                  : (user.isAuthenticated ? '#065f46' : '#334155'),
                 cursor: 'pointer'
               }}
             >
-              <User size={15} color={user.isAuthenticated ? '#059669' : '#64748b'} />
+              {user.role === 'operator' && user.isAuthenticated ? (
+                <PhoneCall size={15} color="#d97706" />
+              ) : (
+                <User size={15} color={user.isAuthenticated ? '#059669' : '#64748b'} />
+              )}
               <span>
                 {user.isAuthenticated
-                  ? (user.isGuest ? t('guestUser') : user.name)
+                  ? (user.role === 'operator'
+                    ? `🎧 ${user.operatorId || 'OP-8821'}`
+                    : (user.isGuest ? t('guestUser') : user.name))
                   : t('signIn')}
               </span>
             </button>
