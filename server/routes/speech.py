@@ -3,7 +3,7 @@ from typing import Optional
 from fastapi import APIRouter, File, UploadFile, Form, HTTPException, status
 from pydantic import BaseModel
 
-from server.speech.base import (
+from speech.base import (
     STTResponse,
     TTSResponse,
     SpeechServiceStatus,
@@ -13,7 +13,7 @@ from server.speech.base import (
     ProviderTimeoutError,
     SpeechProviderError
 )
-from server.speech.factory import (
+from speech.factory import (
     get_stt_provider,
     get_tts_provider,
     get_speech_status

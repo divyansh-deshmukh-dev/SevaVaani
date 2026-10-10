@@ -1,5 +1,5 @@
 from typing import Any, Optional
-from server.core.models import LocalizedString
+from core.models import LocalizedString
 
 class FallbackManager:
     @staticmethod

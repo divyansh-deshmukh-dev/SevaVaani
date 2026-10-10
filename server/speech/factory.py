@@ -1,10 +1,10 @@
-from server.config import settings
-from server.speech.base import (
+from config import settings
+from speech.base import (
     BaseSTTProvider,
     BaseTTSProvider,
     SpeechServiceStatus
 )
-from server.speech.sarvam import SarvamSTTProvider, SarvamTTSProvider
+from speech.sarvam import SarvamSTTProvider, SarvamTTSProvider
 
 def get_stt_provider() -> BaseSTTProvider:
     """Returns the configured server STT provider."""

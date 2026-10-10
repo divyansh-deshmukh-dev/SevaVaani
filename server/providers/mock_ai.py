@@ -1,9 +1,9 @@
 import time
 import re
 from typing import Any, Optional
-from server.providers.base import BaseAIProvider, UnderstandingInput, UnderstandingResult
-from server.core.numbers import normalize_digits, parse_number_with_unit
-from server.services.catalog import catalog
+from providers.base import BaseAIProvider, UnderstandingInput, UnderstandingResult
+from core.numbers import normalize_digits, parse_number_with_unit
+from services.catalog import catalog
 
 class MockAIProvider(BaseAIProvider):
     """

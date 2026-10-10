@@ -1,19 +1,19 @@
 import time
 from typing import Optional
-from server.core.models import (
+from core.models import (
     TurnRequest,
     TurnResponse,
     LocalizedString,
     FormFieldDefinition,
     SessionState
 )
-from server.core.session import SessionData
-from server.core.confidence import calculate_confidence, is_confident_enough
-from server.core.fallback import FallbackManager
-from server.services.catalog import catalog
-from server.services.form_engine import form_engine
-from server.providers.base import UnderstandingInput
-from server.providers.factory import get_ai_provider
+from core.session import SessionData
+from core.confidence import calculate_confidence, is_confident_enough
+from core.fallback import FallbackManager
+from services.catalog import catalog
+from services.form_engine import form_engine
+from providers.base import UnderstandingInput
+from providers.factory import get_ai_provider
 
 class StateMachine:
     async def handle_turn(self, session: SessionData, req: TurnRequest) -> TurnResponse:

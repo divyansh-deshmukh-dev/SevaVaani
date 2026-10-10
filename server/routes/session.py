@@ -1,10 +1,10 @@
 from typing import Optional
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
-from server.core.models import TurnRequest, TurnResponse, LanguageCode
-from server.core.session import session_store, SessionData
-from server.core.state_machine import state_machine
-from server.services.form_engine import form_engine
+from core.models import TurnRequest, TurnResponse, LanguageCode
+from core.session import session_store, SessionData
+from core.state_machine import state_machine
+from services.form_engine import form_engine
 
 router = APIRouter(prefix="/api/session", tags=["Session"])
 

@@ -1,8 +1,8 @@
 import time
 import uuid
 from typing import Any
-from server.services.adapters.base import BaseServiceAdapter
-from server.services.form_engine import form_engine
+from services.adapters.base import BaseServiceAdapter
+from services.form_engine import form_engine
 
 class DemoPmKisanAdapter(BaseServiceAdapter):
     """

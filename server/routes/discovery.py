@@ -1,9 +1,9 @@
 from typing import Any, Optional
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
-from server.core.eligibility import eligibility_engine, CitizenProfile, EligibilityResult
-from server.services.catalog import catalog
-from server.services.adapters.demo_pm_kisan import demo_pm_kisan_adapter
+from core.eligibility import eligibility_engine, CitizenProfile, EligibilityResult
+from services.catalog import catalog
+from services.adapters.demo_pm_kisan import demo_pm_kisan_adapter
 
 router = APIRouter(prefix="/api", tags=["Discovery & Submission"])
 

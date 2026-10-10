@@ -3,8 +3,8 @@ import logging
 from typing import Optional
 import httpx
 
-from server.config import settings
-from server.speech.base import (
+from config import settings
+from speech.base import (
     BaseSTTProvider,
     BaseTTSProvider,
     STTResponse,

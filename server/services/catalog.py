@@ -2,7 +2,7 @@ import json
 import re
 from pathlib import Path
 from typing import Optional
-from server.core.models import ServiceDefinition
+from core.models import ServiceDefinition
 
 CATALOG_FILE = Path(__file__).resolve().parent.parent / "data" / "services.json"
 

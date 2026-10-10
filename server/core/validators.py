@@ -2,7 +2,7 @@ import json
 import re
 from pathlib import Path
 from typing import Optional
-from server.core.numbers import normalize_digits, parse_number_with_unit
+from core.numbers import normalize_digits, parse_number_with_unit
 
 PLACES_FILE = Path(__file__).resolve().parent.parent / "data" / "places.json"
 

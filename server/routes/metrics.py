@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from server.core.session import session_store
+from core.session import session_store
 
 router = APIRouter(prefix="/api/metrics", tags=["Metrics"])
 

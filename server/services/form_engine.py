@@ -1,8 +1,8 @@
 import json
 from pathlib import Path
 from typing import Any, Optional
-from server.core.models import FormFieldDefinition, FormSchema
-from server.core import validators
+from core.models import FormFieldDefinition, FormSchema
+from core import validators
 
 FORMS_DIR = Path(__file__).resolve().parent.parent / "data"
 

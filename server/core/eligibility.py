@@ -1,6 +1,6 @@
 from typing import Any, Optional, Literal
 from pydantic import BaseModel
-from server.core.models import LocalizedString
+from core.models import LocalizedString
 
 EligibilityStatus = Literal["LIKELY_ELIGIBLE", "NOT_ELIGIBLE", "MORE_INFORMATION_REQUIRED"]
 

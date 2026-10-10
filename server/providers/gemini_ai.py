@@ -2,9 +2,9 @@ import os
 import json
 import time
 import httpx
-from server.providers.base import BaseAIProvider, UnderstandingInput, UnderstandingResult
-from server.providers.mock_ai import MockAIProvider
-from server.config import settings
+from providers.base import BaseAIProvider, UnderstandingInput, UnderstandingResult
+from providers.mock_ai import MockAIProvider
+from config import settings
 
 class GeminiAIProvider(BaseAIProvider):
     def __init__(self):

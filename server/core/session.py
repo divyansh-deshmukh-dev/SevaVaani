@@ -2,7 +2,7 @@ import time
 import uuid
 from typing import Any, Optional
 from pydantic import BaseModel, Field
-from server.core.models import LocalizedString, SessionState
+from core.models import LocalizedString, SessionState
 
 class SessionData(BaseModel):
     sessionId: str = Field(default_factory=lambda: str(uuid.uuid4()))

@@ -32,12 +32,19 @@ class Settings:
     SARVAM_STT_MODEL: str = os.getenv("SARVAM_STT_MODEL", "saaras:v1")
     SARVAM_TTS_MODEL: str = os.getenv("SARVAM_TTS_MODEL", "bulbul:v1")
     
-    CORS_ORIGINS: list[str] = [
-        "http://localhost:5173",
-        "http://127.0.0.1:5173",
-        "http://localhost:3000",
-        "http://localhost:8000",
-        "*"
-    ]
+    @property
+    def CORS_ORIGINS(self) -> list[str]:
+        default_origins = [
+            "https://seva-vaani.vercel.app",
+            "http://localhost:5173",
+            "http://127.0.0.1:5173",
+            "http://localhost:3000",
+            "http://localhost:8000",
+        ]
+        raw = os.getenv("CORS_ORIGINS", "")
+        if not raw:
+            return default_origins
+        custom = [o.strip() for o in raw.split(",") if o.strip()]
+        return list(dict.fromkeys(default_origins + custom))
 
 settings = Settings()

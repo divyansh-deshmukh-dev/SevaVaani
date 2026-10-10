@@ -1,8 +1,8 @@
 from typing import Optional
 from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel
-from server.services.catalog import catalog
-from server.core.models import ServiceDefinition
+from services.catalog import catalog
+from core.models import ServiceDefinition
 
 router = APIRouter(prefix="/api", tags=["Services"])
 
@@ -45,7 +45,7 @@ async def get_service(service_id: str):
 @router.get("/services/{service_id}/form")
 async def get_service_form(service_id: str):
     """Get dynamic form schema for a service if configured"""
-    from server.services.form_engine import form_engine
+    from services.form_engine import form_engine
     service = catalog.get_service(service_id)
     if not service:
         raise HTTPException(status_code=404, detail=f"Service '{service_id}' not found.")
